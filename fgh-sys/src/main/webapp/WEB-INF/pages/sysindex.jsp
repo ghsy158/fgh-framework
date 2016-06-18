@@ -1,3 +1,4 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html>
@@ -17,7 +18,7 @@
 
 <script type="text/javascript">
 
-$.post("http://localhost:8088/fgh-sys/getList.json",{},function(result){
+$.post("http://192.168.1.201:8080/fgh-sys/getList.json",{},function(result){
 	debugger;
   });
   
