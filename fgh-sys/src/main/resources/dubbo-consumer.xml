@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context.xsd
+            http://code.alibabatech.com/schema/dubbo       
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+	<context:property-placeholder location="classpath:config.properties" />
+
+
+	<dubbo:application name="${dubbox.application}"
+		owner="programmer" organization="dubbox" />
+
+	<dubbo:registry address="${dubbox.registry.address}" />
+
+	<dubbo:annotation package="fgh" />
+
+	<!--kyro实现序列化 serialization="kyro" -->
+	<dubbo:protocol name="dubbo" serialization="kryo"
+		optimizer="fgh.sys.serial.SerializationOptimizerImpl"></dubbo:protocol>
+
+	<!-- 生成远程服务接口配置 -->
+	<dubbo:reference id="sysUserFacade" interface="fgh.sys.facade.SysUserFacade" />
+</beans>

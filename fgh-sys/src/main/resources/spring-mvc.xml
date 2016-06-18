@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd	
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" />
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<context:property-placeholder location="classpath:config.properties"/>
+	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean>
+	
+	<!-- 上传拦截，如最大上传值及最小上传值 -->
+	  <bean id="multipartResolver"   class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >   
+		  <property name="maxUploadSize">    
+	          <value>${upload.maxFileSize}</value>    
+	       </property>   
+	        <property name="maxInMemorySize">    
+	            <value>${upload.maxMemSize}</value>    
+	        </property>   
+	         <property name="defaultEncoding">    
+	            <value>${env.defaultEncoding}</value>    
+	        </property> 
+	         <property name="uploadTempDir">    
+	            <value>${upload.tempDir}</value>    
+	        </property> 
+    </bean>
+    
+    <!-- 配置SpringMVC的视图解析器 -->
+	<bean id="pageResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+		<property name="prefix" value="/WEB-INF/pages/"/>
+		<property name="suffix" value=".jsp"/>
+		<property name="order" value="1"/>
+	</bean>
+	
+	<context:component-scan base-package="fgh" />
+	
+	<!-- 对静态资源文件的访问  restful-->     
+<!-- 	<mvc:resources mapping="/admin/**" location="/,/admin/" /> -->
+<!-- 	<mvc:resources mapping="/static/**" location="/,/static/" /> -->
+<!-- 	<mvc:resources mapping="/plugins/**" location="/,/plugins/" /> -->
+<!-- 	<mvc:resources mapping="/uploadFiles/**" location="/,/uploadFiles/" />  -->
+
+	<!-- 访问拦截  -->  
+<!--   	<mvc:interceptors> -->
+<!-- 		<mvc:interceptor> -->
+<!-- 			<mvc:mapping path="/**/**"/> -->
+<!-- 			<bean class="com.fh.interceptor.LoginHandlerInterceptor"/> -->
+<!-- 		</mvc:interceptor> -->
+<!-- 	</mvc:interceptors> -->
+	 
+<!-- 	<bean id="exceptionResolver" class="com.fh.resolver.MyExceptionResolver"></bean> -->
+	
+</beans>
