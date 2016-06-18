@@ -1,0 +1,427 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fgh</groupId>
+	<artifactId>fgh-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>fgh-parent</name>
+	<url>http://maven.apache.org</url>
+
+	<!-- 进行聚合的子项目 -->
+	<modules>
+		<module>../fgh-common</module>
+		<module>../fgh-sys</module>
+		<module>../fgh-sys-facade</module>
+		<module>../fgh-sys-service</module>
+	</modules>
+
+	<!-- 配置发布到私服 -->
+	<!-- <distributionManagement> -->
+	<!-- <repository> -->
+	<!-- <id>nexus-releases</id> -->
+	<!-- <name>Nexus release Repository</name> -->
+	<!-- <url>htttp://localhost:8081/nexus/content/repositories/releases/</url> -->
+	<!-- </repository> -->
+	<!-- <snapshotRepository> -->
+	<!-- <id>nexus-snapshots</id> -->
+	<!-- <name>Nexus snapshots Repository</name> -->
+	<!-- <url>htttp://localhost:8081/nexus/content/repositories/snapshots/</url> -->
+	<!-- </snapshotRepository> -->
+	<!-- </distributionManagement> -->
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<junit.version>4.12</junit.version>
+		<spring.version>4.2.6.RELEASE</spring.version>
+		<proxool.version>0.8.3</proxool.version>
+		<commons-fileupload.version>1.2.2</commons-fileupload.version>
+		<commons-lang3.version>3.4</commons-lang3.version>
+		<commons-io.version>2.5</commons-io.version>
+		<commons-dbcp.version>1.4</commons-dbcp.version>
+		<commons-logging.version>1.2</commons-logging.version>
+		<commons-codec.version>1.10</commons-codec.version>
+		<jackson.version>2.5.4</jackson.version>
+		<fastjson.version>1.2.12</fastjson.version>
+		<slf4j.version>1.7.6</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+		<ojdbc7.version>1.0</ojdbc7.version>
+		<jstl.version>1.2</jstl.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+
+		<rocketmq.version>3.2.6</rocketmq.version>
+		<httpclient.version>4.5.2</httpclient.version>
+		<zookeeper.version>3.4.6</zookeeper.version>
+		<zkclient.version>0.8</zkclient.version>
+		<dubbo.version>2.8.4</dubbo.version>
+		<tomcat_embed_version>8.0.11</tomcat_embed_version>
+		<javassit.version>3.20.0-GA</javassit.version>
+		<mina.version>2.0.13</mina.version>
+		<grizzly.version>1.0.28</grizzly.version>
+		<xstream.version>1.4.9</xstream.version>
+		<bsf.version>3.1</bsf.version>
+		<sorcerer.version>0.11</sorcerer.version>
+		<curator.version>3.1.0</curator.version>
+		<jedis.version>2.7.3</jedis.version>
+		<xmemcached.version>2.0.0</xmemcached.version>
+		<cxf.version>3.1.6</cxf.version>
+		<thrift.version>0.9.1</thrift.version>
+
+		<jfreechart.version>1.0.19</jfreechart.version>
+		<hessian.version>4.0.38</hessian.version>
+		<jetty.version>6.1.26</jetty.version>
+		<validation.version>1.1.0.Final</validation.version>
+		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
+		<jcache.version>0.4</jcache.version>
+		<ws.version>2.0.1</ws.version>
+		<resteasy.version>3.0.17.Final</resteasy.version>
+		<kyro.version>2.24.0</kyro.version>
+		<kyro-serializers.version>0.38</kyro-serializers.version><!-- origin 0.26 -->
+		<fst.version>2.47</fst.version><!-- origin 1.55 -->
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>proxool</groupId>
+			<artifactId>proxool</artifactId>
+			<version>${proxool.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${commons-fileupload.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>${commons-dbcp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons-codec.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/log4j/log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.34</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/jstl/jstl -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet-api.version}</version>
+		</dependency>
+		<!-- rocketmq -->
+		<dependency>
+			<groupId>com.alibaba.rocketmq</groupId>
+			<artifactId>rocketmq-remoting</artifactId>
+			<version>${rocketmq.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba.rocketmq</groupId>
+			<artifactId>rocketmq-common</artifactId>
+			<version>${rocketmq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba.rocketmq</groupId>
+			<artifactId>rocketmq-client</artifactId>
+			<version>${rocketmq.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>${zookeeper.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/com.101tec/zkclient -->
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>${zkclient.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/com.alibaba/dubbo -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+			<version>${dubbo.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat_embed_version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.javassist/javassist -->
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>${javassit.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.apache.mina/mina-core -->
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>${mina.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/grizzly/grizzly -->
+		<dependency>
+			<groupId>grizzly</groupId>
+			<artifactId>grizzly</artifactId>
+			<version>${grizzly.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>${xstream.version}</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/org.apache.bsf/bsf-all -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.bsf</groupId> -->
+		<!-- <artifactId>bsf-all</artifactId> -->
+		<!-- <version>${bsf.version}</version> -->
+		<!-- </dependency> -->
+
+		<!-- http://mvnrepository.com/artifact/org.kohsuke.sorcerer/sorcerer-core -->
+		<dependency>
+			<groupId>org.kohsuke.sorcerer</groupId>
+			<artifactId>sorcerer-core</artifactId>
+			<version>${sorcerer.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-framework</artifactId>
+			<version>${curator.version}</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/redis.clients/jedis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jedis.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
+		<dependency>
+			<groupId>com.googlecode.xmemcached</groupId>
+			<artifactId>xmemcached</artifactId>
+			<version>${xmemcached.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.apache.cxf/cxf-core -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-core</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
+		<dependency>
+			<groupId>org.apache.thrift</groupId>
+			<artifactId>libthrift</artifactId>
+			<version>${thrift.version}</version>
+			<type>pom</type>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.jfree/jfreechart -->
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>${jfreechart.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/com.caucho/hessian -->
+		<dependency>
+			<groupId>com.caucho</groupId>
+			<artifactId>hessian</artifactId>
+			<version>${hessian.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.mortbay.jetty/jetty -->
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/javax.validation/validation-api -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>${validation.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate-validator.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${ws.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jaxrs -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-netty</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jdk-http</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson-provider</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/de.javakaffee/kryo-serializers -->
+		<dependency>
+			<groupId>de.javakaffee</groupId>
+			<artifactId>kryo-serializers</artifactId>
+			<version>${kyro-serializers.version}</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/de.ruedigermoeller/fst -->
+		<dependency>
+			<groupId>de.ruedigermoeller</groupId>
+			<artifactId>fst</artifactId>
+			<version>${fst.version}</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/aspectj/aspectjrt -->
+		<dependency>
+			<groupId>aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.5.4</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/com.alibaba/druid -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.0.20</version>
+		</dependency>
+
+		<!-- http://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-logging-juli -->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
+			<version>8.0.35</version>
+		</dependency>
+
+	</dependencies>
+</project>
