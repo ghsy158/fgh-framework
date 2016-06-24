@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.alibaba.fastjson.JSONObject;
 
 import fgh.common.constant.Const;
+import fgh.common.util.FastJsonConvert;
 
 /**
  * 
@@ -45,7 +47,8 @@ public class BaseJdbcDao {
 	/** 启动时间 */
 	private static Date startTime;
 
-	private DataSource dataSource;
+	/**多数据源支持  通过调用MultipleDataSource.setDataSourceKey("sqlServerDataSource")手动切换数据源**/
+	private DataSource multipleDataSource;
 	
 	/**
 	 * 
@@ -53,11 +56,12 @@ public class BaseJdbcDao {
 	 * <b>概要说明：</b><br>
 	 */
 	@Autowired
-	public void initJdbcTemplate(DataSource dataSource) {
+	public void initJdbcTemplate(DataSource multipleDataSource) {
 		//这里要传入参数dataSource，否则启动时会报错 No DataSource specified
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.jdbcTemplate = new JdbcTemplate(multipleDataSource);
 		if (startTime == null) {
-			startTime = getCurrentTime();
+			startTime = new Date(System.currentTimeMillis());
+//			startTime = getCurrentTime();
 		}
 	}
 
@@ -67,7 +71,8 @@ public class BaseJdbcDao {
 	 * <b>概要说明：</b><br>
 	 */
 	public Date getCurrentTime() {
-		return this.getJdbcTemplate().queryForObject("SELECT NOW() FROM DUAL", Date.class);
+//		return this.getJdbcTemplate().queryForObject("SELECT NOW() FROM DUAL", Date.class);//mysql
+		return this.getJdbcTemplate().queryForObject("SELECT sysdate() FROM DUAL", Date.class);//oracle
 	}
 
 	public JdbcTemplate getJdbcTemplate() {
@@ -84,6 +89,19 @@ public class BaseJdbcDao {
 	 */
 	public List<JSONObject> queryForJsonList(String sql,Object... args){
 		return this.jdbcTemplate.query(sql, JSON_ROW_MAPPER,args);
+	}
+	
+	/**
+	 * 
+	 * <b>方法名称：查询json列表string json</b><br>
+	 * <b>概要说明：</b><br>
+	 * @param sql sql语句
+	 * @param args 参数
+	 * @return List<JSONObject> JSON列表
+	 */
+	public String queryForJsonListString(String sql,Object... args){
+		List<JSONObject> list = queryForJsonList(sql, args);
+		return FastJsonConvert.convertObjectToJSON(list);
 	}
 	
 	/**
@@ -124,10 +142,27 @@ public class BaseJdbcDao {
 	 * <b>方法名称：拼接分页语句</b><br>
 	 * <b>概要说明：</b><br>
 	 */
-	public void appendPageSql(StringBuffer sql,int start,int limit){
+	public String appendPageSql(StringBuffer sql,int start,int limit){
 		sql.insert(0, "SELECT * FROM (SELECT PAGE_VIEW.*,ROWNUM AS ROW_SEQ_NO FROM (");
 		sql.append(") PAGE_VIEW WHERE ROWNUM<=").append(start +limit);
 		sql.append(") WHERE ROW_SEQ_NO > ").append(start);
+		return sql.toString();
+	}
+	
+	
+	/**
+	 * <b>方法名称：</b>分页查询<br>
+	 * <b>概要说明：</b><br>
+	 */
+	public String pageQueryForJSONString(String sql,int start,int limit,Object... args){
+		String pageSQL  = getPageSql(sql, start, limit);
+		System.out.println("分页查询SQL："+pageSQL);
+		List<JSONObject> list = queryForJsonList(pageSQL, args);
+		return FastJsonConvert.convertObjectToJSON(list);
+	}
+	
+	private String getPageSql(String sql,int start,int limit){
+		return this.appendPageSql(new StringBuffer(sql), start, limit);
 	}
 	
 	/**
@@ -273,10 +308,10 @@ public class BaseJdbcDao {
 	
 	/**
 	 * 
-	 * <b>方法名称：</b>批量插入<br>
+	 * <b>方法名称：</b>通过表名批量插入,根据list中map的key,自动拼接insert语句，<br>
 	 * <b>概要说明：</b><br>
 	 */
-	protected void insertBatch(String tableName,final List<LinkedHashMap<String, Object>> list){
+	protected void batchInsertByTableName(String tableName,final List<LinkedHashMap<String, Object>> list){
 		if(list.size()<=0){
 			return;
 		}
@@ -300,24 +335,40 @@ public class BaseJdbcDao {
 		sql.delete(sql.length()-1, sql.length());
 		sql.append(" )");
 		
-		this.getJdbcTemplate().batchUpdate(sql.toString(),new BatchPreparedStatementSetter() {
-			
+		batchInsert(sql.toString(), list);
+	}
+	
+	/**
+	 * 
+	 * <b>方法名称：</b>执行批量插入<br>
+	 * <b>概要说明：</b><br>
+	 */
+	private void batchInsert(String sql, final List<LinkedHashMap<String, Object>> list) {
+		this.getJdbcTemplate().batchUpdate(sql.toString(), new BatchPreparedStatementSetter() {
 			@Override
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 				LinkedHashMap<String, Object> map = list.get(i);
 				Object[] valueSet = map.values().toArray(new Object[map.size()]);
 				int len = map.keySet().size();
-				for(int j=0;i<len;j++){
-					ps.setObject(j+1, valueSet[i]);
+				for (int j = 0; j < len; j++) {
+					ps.setObject(j + 1, valueSet[j]);
 				}
 			}
-			
+
 			@Override
 			public int getBatchSize() {
 				return list.size();
 			}
 		});
-		
+	}
+	
+	/**
+	 * 
+	 * <b>方法名称：</b>通过insert sql语句，批量插入，从list中取值<br>
+	 * <b>概要说明：</b><br>
+	 */
+	public void batchInsertBySql(String sql,final List<LinkedHashMap<String, Object>> list){
+		batchInsert(sql.toString(), list);
 	}
 	
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
@@ -337,11 +388,11 @@ public class BaseJdbcDao {
 	}
 
 	public DataSource getDataSource() {
-		return dataSource;
+		return multipleDataSource;
 	}
 
 	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
+		this.multipleDataSource = dataSource;
 	}
 
 }
