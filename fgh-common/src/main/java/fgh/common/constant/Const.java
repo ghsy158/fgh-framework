@@ -92,5 +92,22 @@ public final class Const {
 	/** 请求属性键值，当前角色名称**/
 	public static final String REQ_CUR_ROLE_CODE = "CUR_ROLE_CODE";
 	
+	/**
+	 * <b>系统名称：</b><br>
+	 * <b>模块名称：</b>数据库类型<br>
+	 * <b>中文类名：</b><br>
+	 * <b>概要说明：</b><br>
+	 * 
+	 * @author fgh
+	 * @since 2016年6月26日上午10:41:52
+	 */
+	public static class DatabaseType {
+		/** MySQL **/
+		public static final String MYSQL = "MYSQL";
+		/** oracle **/
+		public static final String ORACLE = "ORACLE";
+		/** Sqlserver **/
+		public static final String SQLSERVER = "SQLSERVER";
+	}
 
 }
