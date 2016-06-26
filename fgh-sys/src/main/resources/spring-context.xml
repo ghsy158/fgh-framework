@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 						http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/aop 
@@ -12,57 +10,82 @@
 						http://www.springframework.org/schema/context/spring-context.xsd
 						http://www.springframework.org/schema/tx 
 						http://www.springframework.org/schema/tx/spring-tx.xsd">
-	
-	<context:property-placeholder location="classpath:config.properties"/>
-	
+
+	<context:property-placeholder location="classpath:config.properties" />
+
+	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+		<property name="slowSqlMillis" value="${jdbc.slowSqlMillis}" />
+		<property name="logSlowSql" value="${jdbc.logSlowSql}" />
+	</bean>
+
 	<!-- 阿里 druid数据库连接池 -->
-	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">  
-         <!-- 数据库基本信息配置 -->
-        <!-- 数据库基本信息配置 -->
-		<property name="driverClassName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${jdbc.url}" />
-		<property name="username" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
-         <property name="filters" value="${jdbc.filters}" />  
-   		 <!-- 最大并发连接数 -->
-         <property name="maxActive" value="${jdbc.maxActive}" />
-         <!-- 初始化连接数量 -->
-         <property name="initialSize" value="${jdbc.initialSize}" />
-         <!-- 配置获取连接等待超时的时间 -->
-         <property name="maxWait" value="${jdbc.maxWait}" />
-         <!-- 最小空闲连接数 -->
-         <property name="minIdle" value="${jdbc.minIdle}" />  
-   		 <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
-         <property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}" />
-         <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
-         <property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}" />  
-         <property name="validationQuery" value="${jdbc.validationQuery}" />  
-         <property name="testWhileIdle" value="${jdbc.testWhileIdle}" />  
-         <property name="testOnBorrow" value="${jdbc.testOnBorrow}" />  
-         <property name="testOnReturn" value="${jdbc.testOnReturn}" />  
-         <property name="maxOpenPreparedStatements" value="${jdbc.maxOpenPreparedStatements}" />
-         <!-- 打开removeAbandoned功能 -->
-         <property name="removeAbandoned" value="${jdbc.removeAbandoned}" />
-         <!-- 1800秒，也就是30分钟 -->
-         <property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}" />
-         <!-- 关闭abanded连接时输出错误日志 -->   
-         <property name="logAbandoned" value="${jdbc.logAbandoned}" />
-	</bean>  
-	
-	<bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">   
-    	<property name="dataSource" ref="dataSource"></property>
- 	</bean>
- 	
- 	<tx:annotation-driven transaction-manager="transactionManager"/>
- 	
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
+		<property name="name" value="dataSource" />
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="${jdbc.mysql.driverClassName}" />
+		<property name="url" value="${jdbc.mysql.url}" />
+		<property name="username" value="${jdbc.mysql.username}" />
+		<property name="password" value="${jdbc.mysql.password}" />
+
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="${jdbc.initialSize}" />
+		<property name="minIdle" value="${jdbc.minIdle}" />
+		<property name="maxActive" value="${jdbc.maxActive}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${jdbc.maxWait}" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}" />
+
+		<property name="validationQuery" value="${jdbc.validationQuery}" />
+		<property name="testWhileIdle" value="${jdbc.testWhileIdle}" />
+		<property name="testOnBorrow" value="${jdbc.testOnBorrow}" />
+		<property name="testOnReturn" value="${jdbc.testOnReturn}" />
+
+		<!-- 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。 
+			如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。分库分表较多的数据库，建议配置为false。 -->
+		<property name="poolPreparedStatements" value="${jdbc.poolPreparedStatements}" />
+		<!-- 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100 -->
+		<property name="maxPoolPreparedStatementPerConnectionSize"
+			value="${jdbc.maxPoolPreparedStatementPerConnectionSize}" />
+
+		<!-- 配置监控统计拦截的filters mergeStat 将相同的sql语句合并成一条 -->
+		<property name="filters" value="${jdbc.filters}" />
+		<!-- 记录慢sql日志 -->
+		<property name="proxyFilters">
+	        <list>
+	            <ref bean="stat-filter" />
+	        </list>
+	    </property>
+		<!-- 缺省多个DruidDataSource的监控数据是各自独立的，在Druid-0.2.17版本之后，支持配置公用监控数据，配置参数为useGloalDataSourceStat -->
+		<property name="useGlobalDataSourceStat" value="true" />
+
+		<!-- 配置removeAbandoned对性能会有一些影响，建议怀疑存在泄漏之后再打开。在上面的配置中，如果连接超过30分钟未关闭，就会被强行回收，并且日志记录连接申请时的调用堆栈。 -->
+		<!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandoned" value="${jdbc.removeAbandoned}" />
+		<!-- 1800秒，也就是30分钟 -->
+		<property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}" />
+		<!-- 关闭abanded连接时输出错误日志 -->
+		<property name="logAbandoned" value="${jdbc.logAbandoned}" />
+	</bean>
+
+	<bean name="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
 	<!-- 启用注解 -->
 	<context:annotation-config />
-	
+
 	<!-- 启动组件扫描，排除@Controller组件，该组件由SpringMVC配置文件扫描 -->
-	<context:component-scan base-package="fgh"/>
-	
-	<aop:aspectj-autoproxy/>
-	
+	<context:component-scan base-package="fgh" />
+
+	<aop:aspectj-autoproxy />
+
 	<!-- 配置dubbo服务 -->
-	<import resource="classpath:dubbo-consumer.xml"/>
+	<import resource="classpath:dubbo-consumer.xml" />
 </beans>
