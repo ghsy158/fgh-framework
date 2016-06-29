@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -17,6 +19,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +41,8 @@ import fgh.common.util.FastJsonConvert;
  */
 public class BaseJdbcDao {
 
+	private Logger logger = Logger.getLogger(BaseJdbcDao.class);
+	
 	/** JSON数据行映射器 **/
 	private static final JsonRowMapper JSON_ROW_MAPPER = new JsonRowMapper();
 
@@ -71,10 +76,42 @@ public class BaseJdbcDao {
 	 * <b>概要说明：</b><br>
 	 */
 	public Date getCurrentTime() {
-//		return this.getJdbcTemplate().queryForObject("SELECT NOW() FROM DUAL", Date.class);//mysql
-		return this.getJdbcTemplate().queryForObject("SELECT sysdate() FROM DUAL", Date.class);//oracle
+		logger.info("获取当前时间...");
+//		this.multipleDataSource.getConnection().getMetaData().getDatabaseProductName();
+		String databaseName=null;
+		try {
+			databaseName = this.jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName();
+			if(null != databaseName ){
+				if(Const.DatabaseType.MYSQL.equals(databaseName.toUpperCase())){
+					return this.getJdbcTemplate().queryForObject("SELECT NOW() FROM DUAL", Date.class);//mysql
+				}else if(Const.DatabaseType.SQLSERVER.equals(databaseName.toUpperCase())){
+					return this.getJdbcTemplate().queryForObject("SELECT GETDATE()", Date.class);//oracle
+				}else if(Const.DatabaseType.ORACLE.equals(databaseName.toUpperCase())){
+					return this.getJdbcTemplate().queryForObject("SELECT sysdate() FROM DUAL", Date.class);//oracle
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("获取当前数据库类型失败，取应用服务器时间",e);
+		}
+		java.util.Date date;
+		try {
+			date = new SimpleDateFormat( Const.FORMAT_DATETIME).parse(getSysemTime());
+			return new Date(date.getTime());
+		} catch (ParseException e) {
+			logger.error("解析当前时间异常",e);
+		}
+		return null;
 	}
 
+	
+	/**
+	 * 
+	 * <b>方法名称：</b>获取当前应用服务器时间<br>
+	 * <b>概要说明：</b><br>
+	 */
+	public String  getSysemTime(){
+		return DateFormatUtils.format(Calendar.getInstance().getTime(), Const.FORMAT_DATETIME);
+	}
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
@@ -271,6 +308,47 @@ public class BaseJdbcDao {
 			return null;
 		}
 		return DateFormatUtils.format(date, Const.FORMAT_TIMESTAMP);
+	}
+		
+	/**
+	 * 
+	 * <b>方法名称：</b>更新方法<br>
+	 * <b>概要说明：</b><br>
+	 * @param tableName 表名
+	 * @param data 要更新的数据
+	 * @param where where条件
+	 */
+	protected int update(String tableName,JSONObject data,JSONObject where){
+		if(data.size()<=0){
+			return 0;
+		}
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append(" UPDATE ");
+		sql.append(tableName);
+		sql.append(" SET ");
+		
+		Set<Entry<String,Object>> set = data.entrySet();
+		List<Object> sqlArgs = new ArrayList<Object>();
+		
+		for(Iterator<Entry<String,Object>> iterator = set.iterator();iterator.hasNext();){
+			Entry<String,Object> entry = iterator.next();
+			sql.append(entry.getKey()+"=?,");
+			sqlArgs.add(entry.getValue());
+		}
+		
+		sql.delete(sql.length()-1, sql.length());
+		
+		sql.append(" WHERE ");
+		Set<Entry<String,Object>> whereSet = where.entrySet();
+		
+		for(Iterator<Entry<String,Object>> iterator = whereSet.iterator();iterator.hasNext();){
+			Entry<String,Object> entry = iterator.next();
+			sql.append(entry.getKey()+"=?,");
+			sqlArgs.add(entry.getValue());
+		}
+		sql.delete(sql.length()-1, sql.length());
+		return this.getJdbcTemplate().update(sql.toString(),sqlArgs.toArray());
 	}
 	
 	/**
