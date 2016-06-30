@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.alibaba.fastjson.JSONObject;
 
 import fgh.common.constant.Const;
+import fgh.common.datasource.MultipleDataSource;
 import fgh.common.util.FastJsonConvert;
 
 /**
@@ -47,7 +48,7 @@ public class BaseJdbcDao {
 	private static final JsonRowMapper JSON_ROW_MAPPER = new JsonRowMapper();
 
 	/** JDBC调用模板 */
-	private JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate = null;
 
 	/** 启动时间 */
 	private static Date startTime;
@@ -103,6 +104,34 @@ public class BaseJdbcDao {
 		return null;
 	}
 
+	
+	/**
+	 * <b>方法名称：</b>获取当前使用的数据库名称<br>
+	 * <b>概要说明：</b><br>
+	 */
+	protected String getCurrentDatabaseName() {
+		try {
+			return null == this.jdbcTemplate ? ""
+					: this.jdbcTemplate.getDataSource().getConnection().getMetaData().getDatabaseProductName();
+		} catch (SQLException e) {
+			logger.error("获取当前使用的数据库名称失败",e);
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * <b>方法名称：</b>设置目标数据源<br>
+	 * <b>概要说明：</b><br>
+	 */
+	protected void setTargetDataSource(String targetDataSource,String dataBaseType){
+		String currentDatabaseName = this.getCurrentDatabaseName();
+		//判断是目标数据源,如果是直接返回
+		if(null!= currentDatabaseName && dataBaseType.equals(currentDatabaseName.toUpperCase())){
+			return;
+		}
+		MultipleDataSource.setDataSourceKey(targetDataSource);
+	}
 	
 	/**
 	 * 
