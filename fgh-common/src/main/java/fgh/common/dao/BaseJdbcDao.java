@@ -125,6 +125,7 @@ public class BaseJdbcDao {
 	 * <b>概要说明：</b><br>
 	 */
 	protected void setTargetDataSource(String targetDataSource,String dataBaseType){
+		logger.info("setTargetDataSource[targetDataSource="+targetDataSource+",dataBaseType="+dataBaseType+"]");
 		String currentDatabaseName = this.getCurrentDatabaseName();
 		//判断是目标数据源,如果是直接返回
 		if(null!= currentDatabaseName && dataBaseType.equals(currentDatabaseName.toUpperCase())){
@@ -217,6 +218,28 @@ public class BaseJdbcDao {
 	
 	
 	/**
+	 * 
+	 * <b>方法名称：</b>查询总条数sql<br>
+	 * <b>概要说明：</b><br>
+	 */
+	protected String getCountSql(StringBuffer sql){
+		sql.insert(0, "SELECT count(1) FROM (");
+		sql.append(")");
+		return sql.toString();
+	}
+	
+	
+	/**
+	 * 
+	 * <b>方法名称：</b>查询总记录数<br>
+	 * <b>概要说明：</b><br>
+	 */
+	protected int  queryCount(String sql,Object... args){
+		String countSql = getCountSql(new StringBuffer(sql));
+		return this.jdbcTemplate.queryForObject(countSql, Integer.class);
+	}
+
+	/**
 	 * <b>方法名称：</b>分页查询<br>
 	 * <b>概要说明：</b><br>
 	 */
@@ -224,7 +247,18 @@ public class BaseJdbcDao {
 		String pageSQL  = getPageSql(sql, start, limit);
 		System.out.println("分页查询SQL："+pageSQL);
 		List<JSONObject> list = queryForJsonList(pageSQL, args);
-		return FastJsonConvert.convertObjectToJSON(list);
+//		JSONObject page = new JSONObject();
+//		page.put("total", queryCount(sql, args));
+//		page.put("pagesie", list.size());
+		
+		Page page = new Page();
+		int total = queryCount(sql, args);
+		page.setTotalRows(total);
+		page.setRows(list);
+		page.setNumPerPage(start);
+		String result = FastJsonConvert.convertObjectToJSON(page);
+//		String result = FastJsonConvert.convertObjectToJSON(page) + FastJsonConvert.convertObjectToJSON(list) ;
+		return result;
 	}
 	
 	private String getPageSql(String sql,int start,int limit){
