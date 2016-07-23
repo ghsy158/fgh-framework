@@ -76,9 +76,9 @@
 		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 		<jcache.version>0.4</jcache.version>
 		<ws.version>2.0.1</ws.version>
-		<resteasy.version>3.0.17.Final</resteasy.version>
+		<resteasy.version>3.0.18.Final</resteasy.version>
 		<kyro.version>2.24.0</kyro.version>
-		<kyro-serializers.version>0.38</kyro-serializers.version><!-- origin 0.26 -->
+		<kyro-serializers.version>0.37</kyro-serializers.version><!-- origin 0.26 -->
 		<fst.version>2.47</fst.version><!-- origin 1.55 -->
 	</properties>
 	<dependencies>
@@ -259,6 +259,13 @@
 			<artifactId>tomcat-embed-core</artifactId>
 			<version>${tomcat_embed_version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
+			<version>8.0.35</version>
+		</dependency>
+
 		<!-- http://mvnrepository.com/artifact/org.javassist/javassist -->
 		<dependency>
 			<groupId>org.javassist</groupId>
@@ -390,6 +397,12 @@
 			<artifactId>resteasy-jackson-provider</artifactId>
 			<version>${resteasy.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.esotericsoftware.kryo</groupId>
+			<artifactId>kryo</artifactId>
+			<version>2.24.0</version>
+		</dependency>
+
 		<!-- http://mvnrepository.com/artifact/de.javakaffee/kryo-serializers -->
 		<dependency>
 			<groupId>de.javakaffee</groupId>
@@ -414,13 +427,6 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 			<version>1.0.20</version>
-		</dependency>
-
-		<!-- http://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-logging-juli -->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<version>8.0.35</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc14 -->
 		<dependency>
