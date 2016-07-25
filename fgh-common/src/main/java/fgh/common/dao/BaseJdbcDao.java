@@ -239,26 +239,36 @@ public class BaseJdbcDao {
 		return this.jdbcTemplate.queryForObject(countSql, Integer.class);
 	}
 
+	
+	public List<JSONObject> pageQueryForList(String sql,int start,int limit,Object... args){
+		String pageSQL  = getPageSql(sql, start, limit);
+		System.out.println("分页查询SQL："+pageSQL);
+		return queryForJsonList(pageSQL, args);
+	}
 	/**
 	 * <b>方法名称：</b>分页查询<br>
 	 * <b>概要说明：</b><br>
 	 */
 	public String pageQueryForJSONString(String sql,int start,int limit,Object... args){
-		String pageSQL  = getPageSql(sql, start, limit);
-		System.out.println("分页查询SQL："+pageSQL);
-		List<JSONObject> list = queryForJsonList(pageSQL, args);
-//		JSONObject page = new JSONObject();
-//		page.put("total", queryCount(sql, args));
-//		page.put("pagesie", list.size());
-		
+		return FastJsonConvert.convertObjectToJSON(getPage(sql, start, limit, args));
+	}
+	
+	/**
+	 * 
+	 * @param sql
+	 * @param start
+	 * @param limit
+	 * @param args
+	 * @return
+	 */
+	public Page getPage(String sql,int start,int limit,Object... args){
+		List<JSONObject> list =pageQueryForList(sql, start, limit, args);
 		Page page = new Page();
 		int total = queryCount(sql, args);
 		page.setTotalRows(total);
 		page.setRows(list);
 		page.setNumPerPage(start);
-		String result = FastJsonConvert.convertObjectToJSON(page);
-//		String result = FastJsonConvert.convertObjectToJSON(page) + FastJsonConvert.convertObjectToJSON(list) ;
-		return result;
+		return page;
 	}
 	
 	private String getPageSql(String sql,int start,int limit){
