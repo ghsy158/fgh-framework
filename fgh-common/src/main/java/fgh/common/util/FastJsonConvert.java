@@ -3,19 +3,16 @@ package fgh.common.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 /**
- * 
- * <b>系统名称：</b><br>
- * <b>模块名称：</b>fastJson转换类<br>
- * <b>中文类名：</b><br>
- * <b>概要说明：</b><br>
- * 
+ * fastJson转换类
  * @author fgh
- * @since 2016年6月4日上午11:32:25
+ * @since 2016年7月28日下午5:37:00
  */
 public class FastJsonConvert {
 
@@ -30,6 +27,9 @@ public class FastJsonConvert {
 	 */
 	public static <T> T convertJSONToObject(String data, Class<T> clazz) {
 		try {
+			if(StringUtils.isBlank(data)){
+				return null;
+			}
 			T t = JSON.parseObject(data, clazz);
 			return t;
 		} catch (Exception e) {
@@ -79,7 +79,7 @@ public class FastJsonConvert {
 	 * @param clazz 转换对象
 	 * @return List<T> 集合对象
 	 */
-	public static <T> List<T> convertJSONToArray(List<JSONObject> data, Class<T> clazz) {
+	public static <T> List<T> convertJSONToList(List<JSONObject> data, Class<T> clazz) {
 		try {
 			List<T> t = new ArrayList<T>();
 			for (JSONObject jsonObject : data) {
