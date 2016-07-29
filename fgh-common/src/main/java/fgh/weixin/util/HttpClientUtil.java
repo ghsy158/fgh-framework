@@ -65,13 +65,13 @@ public class HttpClientUtil {
 			if (null != outputStr) {
 				OutputStream outputStream = conn.getOutputStream();
 				// 注意编码格式
-				outputStream.write(outputStr.getBytes("GBK"));
+				outputStream.write(outputStr.getBytes("UTF-8"));
 				outputStream.close();
 			}
 
 			// 从输入流读取返回内容
 			is = conn.getInputStream();
-			isr = new InputStreamReader(is, "GBK");
+			isr = new InputStreamReader(is, "UTF-8");
 			br = new BufferedReader(isr);
 			String str = null;
 			StringBuffer resp = new StringBuffer();
