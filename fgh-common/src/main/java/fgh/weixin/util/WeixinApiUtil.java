@@ -9,10 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 
+import fgh.common.util.FastJsonConvert;
 import fgh.common.util.RedisUtil;
+import fgh.weixin.pojo.AgentInfo;
 import fgh.weixin.pojo.Token;
+import fgh.weixin.pojo.UserInfo;
 
 /**
  * 微信API工具类
@@ -26,9 +28,17 @@ public class WeixinApiUtil {
 
 	// 公众号凭证获取（GET）
 	public final static String token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-
+	// 企业api start
+	/** 获取企业token **/
 	public static final String QY_TOKEN_URL = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=APP_CORPID&corpsecret=APP_SECRECT";
 
+	/** 根据code获取成员信息 **/
+	public static final String GET_USER_INFO_URL = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=ACCESS_TOKEN&code=CODE";
+
+	/** 获取企业号应用 **/
+	public static final String GET_AGENT_INFO = "https://qyapi.weixin.qq.com/cgi-bin/agent/get?access_token=ACCESS_TOKEN&agentid=AGENTID";
+
+	// 企业api end
 	private static final Properties weixinProp = new Properties();
 
 	static {
@@ -68,6 +78,14 @@ public class WeixinApiUtil {
 	}
 
 	/**
+	 * 获取微信配置
+	 * @param key
+	 * @return
+	 */
+	public static String getWeixinConfig(String key){
+		return weixinProp.getProperty(key);
+	}
+	/**
 	 * 获取接口访问凭证
 	 * 
 	 * @param appid
@@ -77,24 +95,10 @@ public class WeixinApiUtil {
 	 * @return
 	 */
 	public static Token getToken(String appid, String appsecret) {
-		Token token = null;
 		String requestUrl = token_url.replace("APPID", appid).replace("APPSECRET", appsecret);
 		// 发起GET请求获取凭证
-		JSONObject jsonObject = HttpClientUtil.httpsRequest(requestUrl, "GET", null);
-
-		if (null != jsonObject) {
-			try {
-				token = new Token();
-				token.setAccessToken(jsonObject.getString("access_token"));
-				token.setExpiresIn(jsonObject.getIntValue("expires_in"));
-			} catch (JSONException e) {
-				token = null;
-				// 获取token失败
-				logger.error("获取token失败 errcode:{} errmsg:{}", jsonObject.getIntValue("errcode"),
-						jsonObject.getString("errmsg"));
-			}
-		}
-		return token;
+		String resp = HttpClientUtil.httpsRequest(requestUrl, "GET", null);
+		return FastJsonConvert.convertJSONToObject(resp, Token.class);
 	}
 
 	/**
@@ -109,26 +113,51 @@ public class WeixinApiUtil {
 			Token token = null;
 			String requestUrl = getQyTokenUrl();
 			// 发起GET请求获取凭证
-			JSONObject jsonObject = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
-
-			if (null != jsonObject) {
+			String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+			token = FastJsonConvert.convertJSONToObject(resp, Token.class);
+			if (null != token) {
 				try {
-					token = new Token();
-					token.setAccessToken(jsonObject.getString("access_token"));
-					token.setExpiresIn(jsonObject.getIntValue("expires_in"));
-					logger.info("获取企业AccessToken[" + token.getAccessToken() + "]");
+					logger.info("调用api,获取企业AccessToken[" + token.getAccessToken() + "]");
 					setRedisCorpToken(token);
 					tokenValue = token.getAccessToken();
 				} catch (JSONException e) {
 					token = null;
-					// 获取token失败
-					logger.error("获取企业token失败 errcode:{} errmsg:{}", jsonObject.getIntValue("errcode"),
-							jsonObject.getString("errmsg"));
+					logger.error("调用api,获取企业token失败 errcode:{} errmsg:{}", e);
 				}
 			}
+		} else {
+			logger.info("从redis缓存获取企业AccessToken[" + tokenValue + "]");
 		}
 		return tokenValue;
 
+	}
+
+	/**
+	 * 企业API<br>
+	 * 根据code获取成员信息
+	 * 
+	 * @param code
+	 */
+	public static UserInfo getUserInfo(String code) {
+		String requestUrl = GET_USER_INFO_URL.replace("ACCESS_TOKEN", getQyToken()).replace("CODE", code);
+		String result = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+		UserInfo userInfo = FastJsonConvert.convertJSONToObject(result, UserInfo.class);
+		logger.info("微信oauth获取用户信息code["+code+"],userInfo[" + userInfo + "]");
+		return userInfo;
+	}
+
+	/**
+	 * 企业api<br>
+	 * 获取企业号应用
+	 * 
+	 * @param agentId
+	 *            应用ID
+	 */
+	public static AgentInfo getAgentfo(String agentId) {
+		String requestUrl = GET_AGENT_INFO.replace("ACCESS_TOKEN", getQyToken()).replace("AGENTID", agentId);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+		AgentInfo agentInfo = FastJsonConvert.convertJSONToObject(resp, AgentInfo.class);
+		return agentInfo;
 	}
 
 	/**
@@ -137,10 +166,21 @@ public class WeixinApiUtil {
 	 * @param token
 	 */
 	public static void setRedisCorpToken(Token token) {
-		if (null != token) {
-			RedisUtil.set(Constant.REDIS_CORP_TOKEN_KEY, token.getAccessToken());
-			RedisUtil.set(Constant.REDIS_CORP_TOKEN_EXPIRE_KEY, String.valueOf(token.getExpiresIn()));
-			RedisUtil.expire(Constant.REDIS_CORP_TOKEN_KEY, token.getExpiresIn() - 200);
-		}
+		RedisUtil.set(Constant.REDIS_CORP_TOKEN_KEY, token.getAccessToken());
+		RedisUtil.set(Constant.REDIS_CORP_TOKEN_EXPIRE_KEY, String.valueOf(token.getExpiresIn()));
+		RedisUtil.expire(Constant.REDIS_CORP_TOKEN_KEY, token.getExpiresIn() - 200);
+	}
+
+	public static void main(String[] args) {
+		// Token token = null;
+		// String requestUrl = getQyTokenUrl();
+		// // 发起GET请求获取凭证
+		// String resp = HttpClientUtil.httpsRequest(requestUrl,
+		// Constant.requestMethod.GET, null);
+		// token = FastJsonConvert.convertJSONToObject(resp, Token.class);
+		// System.out.println(token);
+		// getQyToken();
+		getAgentfo("14");
+		getUserInfo("223234");
 	}
 }
