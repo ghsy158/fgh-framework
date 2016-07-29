@@ -71,7 +71,11 @@ public class HttpClientUtil {
 
 			// 从输入流读取返回内容
 			is = conn.getInputStream();
+<<<<<<< HEAD
 			isr = new InputStreamReader(is, "UTF-8");
+=======
+			isr = new InputStreamReader(is, "GBK");
+>>>>>>> branch 'master' of git@github.com:ghsy158/fgh-framework.git
 			br = new BufferedReader(isr);
 			String str = null;
 			StringBuffer resp = new StringBuffer();
