@@ -68,7 +68,7 @@ public class WeixinApiUtil {
 	 * 
 	 * @return
 	 */
-	private static String getQyCorpID() {
+	public static String getQyCorpID() {
 		return weixinProp.getProperty("qy_CorpID");
 	}
 
@@ -221,6 +221,7 @@ public class WeixinApiUtil {
 		// getQyToken();
 		// getAgentfo("14");
 		// getUserInfo("223234");
-		getQyJsApiTicket();
+//		getQyJsApiTicket();
+		SignUtil.getCorpJsTicketSign("http://localhost:8088/hx-sales-web/");
 	}
 }

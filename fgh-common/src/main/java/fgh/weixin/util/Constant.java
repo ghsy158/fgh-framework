@@ -19,6 +19,11 @@ public class Constant {
 		public static final String POST = "POST";
 	}
 
+	/**企业 token redis key**/
 	public static final String REDIS_CORP_TOKEN_KEY = "corpToken";
+	/**企业 jsapi_ticket redis key**/
+	public static final String REDIS_CORP_JSAPI_TICKET_KEY = "corpJsTicket";
 	public static final String REDIS_CORP_TOKEN_EXPIRE_KEY = "corpTokenExpire";
+	
+	public static final String ERROR_CODE_OK="0";
 }
