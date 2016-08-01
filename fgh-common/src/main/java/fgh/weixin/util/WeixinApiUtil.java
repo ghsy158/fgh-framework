@@ -172,6 +172,7 @@ public class WeixinApiUtil {
 	 * @param token
 	 */
 	public static void setRedisCorpToken(Token token) {
+		logger.info("setRedisCorpToken...");
 		RedisUtil.set(Constant.REDIS_CORP_TOKEN_KEY, token.getAccessToken());
 		RedisUtil.set(Constant.REDIS_CORP_TOKEN_EXPIRE_KEY, String.valueOf(token.getExpiresIn()));
 		RedisUtil.expire(Constant.REDIS_CORP_TOKEN_KEY, token.getExpiresIn() - 200);
@@ -196,6 +197,8 @@ public class WeixinApiUtil {
 					if (null != jsApiTicket && Constant.ERROR_CODE_OK.equals(jsApiTicket.getErrCode())) {
 						RedisUtil.set(Constant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getTicket());
 						RedisUtil.expire(Constant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getExpiresIn() - 200);
+					}else{
+						logger.info("调用api,获取企业jsapi_ticket失败,errorCode["+jsApiTicket.getErrCode()+"],errorMsg["+jsApiTicket.getErrMsg()+"]");
 					}
 					ticket = jsApiTicket.getTicket();
 				} catch (JSONException e) {
