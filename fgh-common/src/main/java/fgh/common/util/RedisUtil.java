@@ -25,8 +25,11 @@ public class RedisUtil {
 	public static JedisPool pool = null;
 
 	private static final Properties redisProp = new Properties();
+	
+	private static final String LOG_MAIN="【redis】";
 
 	static {
+		logger.info(LOG_MAIN+"load redis.properties...");
 		InputStream fis = WeixinApiUtil.class.getClassLoader().getResourceAsStream("redis.properties");
 		try {
 			redisProp.load(fis);
@@ -42,6 +45,7 @@ public class RedisUtil {
 	 */
 	public static synchronized JedisPool getJedisPool() {
 		if (pool == null) {
+			logger.info(LOG_MAIN+"getJedisPool...");
 			JedisPoolConfig config = new JedisPoolConfig();
 			// 控制一个pool可分配多少个jedis实例，通过pool.getResource()来获取；
 			// 如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗尽)。
@@ -64,13 +68,23 @@ public class RedisUtil {
 	 * @param redis
 	 */
 	public static void returnResource(Jedis redis) {
+		logger.info(LOG_MAIN+"redis returnResource...");
 		if (redis != null) {
 			redis.close();
+			pool.close();
 		}
 	}
 
+	/**
+	 * 获取redis实例
+	 * @return
+	 */
 	public static Jedis getJedis() {
-		return getJedisPool().getResource();
+		JedisPool pool = getJedisPool();
+		if(logger.isInfoEnabled()){
+			logger.info(LOG_MAIN+"getJedis,NumActive["+pool.getNumActive()+"],NumIdle["+pool.getNumIdle()+"],NumWaiters["+pool.getNumWaiters()+"]");
+		}
+		return pool.getResource();
 	}
 
 	/**
@@ -80,6 +94,7 @@ public class RedisUtil {
 	 * @return
 	 */
 	public static String get(String key) {
+		logger.info(LOG_MAIN+"redis get,key["+key+"]");
 		String value = null;
 		Jedis jedis = null;
 		try {
@@ -87,8 +102,8 @@ public class RedisUtil {
 			value = jedis.get(key);
 		} catch (Exception e) {
 			// 释放redis对象
+			logger.error(LOG_MAIN+"redis get,key["+key+"] error",e);
 			returnResource(jedis);
-			logger.error(e.getMessage(), e);
 		} finally {
 			// 返还到连接池
 			returnResource(jedis);
@@ -105,7 +120,19 @@ public class RedisUtil {
 	 * @return
 	 */
 	public static String set(String key, String value) {
-		return getJedis().set(key, value);
+		logger.info(LOG_MAIN+"redis set,key["+key+"],value["+value+"]");
+		Jedis jedis = null;
+		String result = null;
+		try {
+			jedis = getJedis();
+			result = jedis.set(key, value);
+		}catch (Exception e) {
+			logger.error(LOG_MAIN+"redis set,key["+key+"],value["+value+"] error",e);
+			returnResource(jedis);
+		}  finally {
+			returnResource(jedis);
+		}
+		return result;
 	}
 
 	/**
@@ -116,7 +143,19 @@ public class RedisUtil {
 	 * @return
 	 */
 	public static long expire(String key, int seconds) {
-		return getJedis().expire(key, seconds);
+		logger.info(LOG_MAIN+"redis expire,key["+key+"],value["+seconds+"]");
+		Jedis jedis = null;
+		long result = 0L;
+		try {
+			jedis = getJedis();
+			jedis.expire(key, seconds);
+		}catch (Exception e) {
+			logger.info(LOG_MAIN+"redis expire,key["+key+"],value["+seconds+"] error",e);
+			returnResource(jedis);
+		}  finally {
+			returnResource(jedis);
+		}
+		return result;
 	}
 
 	private static String getRedisHost() {
