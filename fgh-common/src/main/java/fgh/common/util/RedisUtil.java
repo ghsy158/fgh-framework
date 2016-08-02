@@ -71,6 +71,7 @@ public class RedisUtil {
 		logger.info(LOG_MAIN+"redis returnResource...");
 		if (redis != null) {
 			redis.close();
+			pool.close();
 		}
 	}
 
