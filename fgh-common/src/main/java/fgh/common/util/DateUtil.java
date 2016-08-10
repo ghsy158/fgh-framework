@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
  * <b>模块名称：</b><br>
  * <b>中文类名：</b><br>
  * <b>概要说明：</b><br>
+ * 
  * @author fgh
  * @since 2016年6月29日下午3:57:40
  */
@@ -28,6 +29,7 @@ public class DateUtil {
 	private static SimpleDateFormat simpleDateFormatYM = new SimpleDateFormat("yyyy-MM");
 	private static SimpleDateFormat simpleDateFormatYMZH = new SimpleDateFormat("yyyy年MM月");
 	private static SimpleDateFormat simpleDateFormatY = new SimpleDateFormat("yyyy");
+	public static final String DATE_FORMAT_YYYYMMDD = "yyyyMMdd";
 
 	/**
 	 * format date just only for MQ generate insert SQL sentences。
@@ -59,13 +61,17 @@ public class DateUtil {
 		return d.toString();
 	}
 
+	/**
+	 * 格式化
+	 * @param d 要格式化的对象
+	 * @param partten 格式化的pattern
+	 * @return
+	 */
 	public static String format(Object d, String partten) {
 		if (d == null) {
 			return "";
 		}
-
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(partten);
-
 		return simpleDateFormat.format(d);
 	}
 
@@ -607,4 +613,17 @@ public class DateUtil {
 		Date result = new Date(times);
 		return DateUtil.format(result, "yyyy-MM-dd HH:mm:ss");
 	}
+
+	/**
+	 * 得到距离当天时间间隔的日期,大于0往后，小于0往前
+	 * 
+	 * @param n
+	 */
+	public static Date getSpecifyDate(int n) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, n);
+		Date date = calendar.getTime();
+		return date;
+	}
+
 }
