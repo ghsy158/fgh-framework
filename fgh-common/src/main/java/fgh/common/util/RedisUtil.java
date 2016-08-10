@@ -44,7 +44,7 @@ public class RedisUtil {
 	 * @return
 	 */
 	public static synchronized JedisPool getJedisPool() {
-		if (pool == null) {
+		if (pool == null || pool.isClosed()) {
 			logger.info(LOG_MAIN+"getJedisPool...");
 			JedisPoolConfig config = new JedisPoolConfig();
 			// 控制一个pool可分配多少个jedis实例，通过pool.getResource()来获取；
@@ -71,7 +71,6 @@ public class RedisUtil {
 		logger.info(LOG_MAIN+"redis returnResource...");
 		if (redis != null) {
 			redis.close();
-			pool.close();
 		}
 	}
 

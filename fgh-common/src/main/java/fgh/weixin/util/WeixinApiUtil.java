@@ -173,9 +173,7 @@ public class WeixinApiUtil {
 	 */
 	public static void setRedisCorpToken(Token token) {
 		logger.info("setRedisCorpToken...");
-		RedisUtil.set(Constant.REDIS_CORP_TOKEN_KEY, token.getAccessToken());
-		RedisUtil.set(Constant.REDIS_CORP_TOKEN_EXPIRE_KEY, String.valueOf(token.getExpiresIn()));
-		RedisUtil.expire(Constant.REDIS_CORP_TOKEN_KEY, token.getExpiresIn() - 200);
+		RedisUtil.setExSecond(Constant.REDIS_CORP_TOKEN_KEY, token.getAccessToken(), token.getExpiresIn() - 200);
 	}
 
 	/**
