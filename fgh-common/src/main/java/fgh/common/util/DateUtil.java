@@ -626,4 +626,11 @@ public class DateUtil {
 		return date;
 	}
 
+	/**
+	 * 获取昨日日期   格式yyyyMMdd
+	 * @return
+	 */
+	public static String getYesterdayDate(){
+		return DateUtil.format(DateUtil.getSpecifyDate(-1), DateUtil.DATE_FORMAT_YYYYMMDD);
+	}
 }
