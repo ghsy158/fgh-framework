@@ -136,6 +136,40 @@ public class RedisUtil {
 	}
 
 	/**
+	 * 设置key并设置超时时间秒数
+	 * @param key
+	 * @param value
+	 * @param seconds 超时秒数
+	 * @return
+	 */
+	public static String setExSecond(String key, String value,int seconds) {
+		logger.info(LOG_MAIN+"redis setExSecond,key["+key+"],value["+value+"],expire["+seconds+"]");
+		Jedis jedis = null;
+		String result = null;
+		try {
+			jedis = getJedis();
+			result = jedis.setex(key, seconds, value);
+		}catch (Exception e) {
+			logger.error(LOG_MAIN+"redis setExSecond error ,key["+key+"],value["+value+"],expire["+seconds+"]");
+			returnResource(jedis);
+		}  finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+	
+	/**
+	 * 设置key并设置超时时间 小时
+	 * @param key
+	 * @param value
+	 * @param hour 小时数
+	 * @return
+	 */
+	public static String setExHour(String key, String value,int hour) {
+		int seconds = hour*60*60;
+		return setExSecond(key, value, seconds);
+	}
+	/**
 	 * 设置超时时间
 	 * 
 	 * @param key
