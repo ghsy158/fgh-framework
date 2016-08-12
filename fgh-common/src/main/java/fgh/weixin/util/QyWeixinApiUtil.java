@@ -17,17 +17,16 @@ import fgh.weixin.pojo.AgentInfo;
 import fgh.weixin.pojo.JsApiTicket;
 import fgh.weixin.pojo.Token;
 import fgh.weixin.pojo.UserInfo;
-import sun.tools.tree.Context;
 
 /**
- * 微信API工具类
+ * 	企业微信API工具类
  * 
  * @author fgh
  * @since 2016年7月28日上午10:49:13
  */
-public class WeixinApiUtil {
+public class QyWeixinApiUtil {
 
-	private static Logger logger = LoggerFactory.getLogger(WeixinApiUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(QyWeixinApiUtil.class);
 
 	// 公众号凭证获取（GET）
 	public final static String token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
@@ -49,10 +48,13 @@ public class WeixinApiUtil {
 	//发送消息
 	public static final String SEND_MSG = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=ACCESS_TOKEN";
 	
+	//创建菜单
+	public static final String CREATE_MENU="https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN&agentid=AGENTID";
+	
 	private static final Properties weixinProp = new Properties();
 	
 	static {
-		InputStream fis = WeixinApiUtil.class.getClassLoader().getResourceAsStream("weixin.properties");
+		InputStream fis = QyWeixinApiUtil.class.getClassLoader().getResourceAsStream("weixin.properties");
 		try {
 			weixinProp.load(fis);
 		} catch (IOException e) {
@@ -217,6 +219,10 @@ public class WeixinApiUtil {
 
 	}
 
+	public static void createMenu(){
+		
+	}
+	
 	public static void main(String[] args) {
 		// Token token = null;
 		// String requestUrl = getQyTokenUrl();

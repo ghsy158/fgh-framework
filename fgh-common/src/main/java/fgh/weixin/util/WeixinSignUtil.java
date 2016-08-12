@@ -130,7 +130,7 @@ public class WeixinSignUtil {
 		String timestamp = createTimestamp();
 		String signature = "";
 
-		String jsApiTicket = WeixinApiUtil.getQyJsApiTicket();//ticket
+		String jsApiTicket = QyWeixinApiUtil.getQyJsApiTicket();//ticket
 		
 		// 注意这里参数名必须全部小写，且必须有序
 		StringBuffer signStr = new StringBuffer(64);

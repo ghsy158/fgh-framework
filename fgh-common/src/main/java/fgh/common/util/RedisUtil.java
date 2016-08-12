@@ -7,7 +7,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fgh.weixin.util.WeixinApiUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -30,7 +29,7 @@ public class RedisUtil {
 
 	static {
 		logger.info(LOG_MAIN+"load redis.properties...");
-		InputStream fis = WeixinApiUtil.class.getClassLoader().getResourceAsStream("redis.properties");
+		InputStream fis = RedisUtil.class.getClassLoader().getResourceAsStream("redis.properties");
 		try {
 			redisProp.load(fis);
 		} catch (IOException e) {
