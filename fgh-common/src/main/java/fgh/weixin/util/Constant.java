@@ -26,4 +26,8 @@ public class Constant {
 	public static final String REDIS_CORP_TOKEN_EXPIRE_KEY = "corpTokenExpire";
 	
 	public static final String ERROR_CODE_OK="0";
+	
+	public static final String LOG_MAIN_WEIXIN="【wexin】";
+
+	
 }
