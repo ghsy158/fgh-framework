@@ -80,8 +80,36 @@
 		<kyro.version>2.24.0</kyro.version>
 		<kyro-serializers.version>0.37</kyro-serializers.version><!-- origin 0.26 -->
 		<fst.version>2.47</fst.version><!-- origin 1.55 -->
+		<logback.version>1.1.7</logback.version>
 	</properties>
 	<dependencies>
+		<!-- logback -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-access</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.logback-extensions</groupId>
+			<artifactId>logback-ext-spring</artifactId>
+			<version>0.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<!-- logback -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
