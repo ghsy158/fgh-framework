@@ -7,24 +7,49 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 签名工具类
- * 
+ * 微信签名工具类
  * @author fgh
- * @date 2013-09-01
+ * @since 2016年8月12日下午3:15:08
  */
-public class SignUtil {
+public class WeixinSignUtil {
 
-	private static Logger logger = LoggerFactory.getLogger(SignUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(WeixinSignUtil.class);
 
-	// 与开发模式接口配置信息中的Token保持一致
-	private static String token = "weixin";
+	/**
+	 * 初始化回调地址
+	 * @param request
+	 * @param token
+	 * @return
+	 */
+	public static String initWeixinCallback(HttpServletRequest request,String token) {
+		// 微信加密签名
+		String signature = request.getParameter("signature");
+		// 时间戳
+		String timestamp = request.getParameter("timestamp");
+		// 随机数
+		String nonce = request.getParameter("nonce");
+		// 随机字符串
+		String echostr = request.getParameter("echostr");
 
+		logger.info(Constant.LOG_MAIN_WEIXIN+"微信校验签名,signature[" + signature + "],timestamp[" + timestamp + "],nonce[" + nonce + "],echostr["
+				+ echostr + "]");
+		
+		// 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
+		if (checkSignature(signature, timestamp, nonce,token)) {
+			return echostr;
+		} else {
+			return "error";
+		}
+	}
+	
 	/**
 	 * 校验签名
 	 * 
@@ -34,10 +59,11 @@ public class SignUtil {
 	 *            时间戳
 	 * @param nonce
 	 *            随机数
+	 * @param token 应用自定义的token
 	 * @return
 	 */
-	public static boolean checkSignature(String signature, String timestamp, String nonce) {
-		logger.info("weixin checkSignature start...");
+	public static boolean checkSignature(String signature, String timestamp, String nonce,String token) {
+		logger.info(Constant.LOG_MAIN_WEIXIN+"checkSignature start...");
 		// 对token、timestamp和nonce按字典排序
 		String[] paramArr = new String[] { token, timestamp, nonce };
 		Arrays.sort(paramArr);
@@ -52,10 +78,10 @@ public class SignUtil {
 			byte[] digest = md.digest(content.toString().getBytes());
 			ciphertext = byteToStr(digest);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("weixin checkSignature error", e);
+			logger.error(Constant.LOG_MAIN_WEIXIN+"checkSignature error", e);
 		}
 		boolean result = ciphertext != null ? ciphertext.equals(signature.toUpperCase()) : false;
-		logger.info("weixin checkSignature end ,result[" + result + "]...");
+		logger.info(Constant.LOG_MAIN_WEIXIN+"checkSignature end ,result[" + result + "]...");
 
 		// 将sha1加密后的字符串与signature进行对比
 		return result;
@@ -99,7 +125,7 @@ public class SignUtil {
 	 * @return
 	 */
 	public static JSONObject getCorpJsTicketSign(String url) {
-		logger.info("getCorpJsTicketSign,url["+url+"]");
+		logger.info(Constant.LOG_MAIN_WEIXIN+"getCorpJsTicketSign,url["+url+"]");
 		String nonceStr = createNonceStr();
 		String timestamp = createTimestamp();
 		String signature = "";
@@ -136,7 +162,7 @@ public class SignUtil {
 		result.put("timestamp", timestamp);
 		result.put("signature", signature);
 
-		logger.info("getCorpJsTicketSign,"+result+"");
+		logger.info(Constant.LOG_MAIN_WEIXIN+"getCorpJsTicketSign,"+result+"");
 		return result;
 	}
 

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 
 import fgh.common.util.FastJsonConvert;
 import fgh.common.util.RedisUtil;
@@ -16,6 +17,7 @@ import fgh.weixin.pojo.AgentInfo;
 import fgh.weixin.pojo.JsApiTicket;
 import fgh.weixin.pojo.Token;
 import fgh.weixin.pojo.UserInfo;
+import sun.tools.tree.Context;
 
 /**
  * 微信API工具类
@@ -43,8 +45,12 @@ public class WeixinApiUtil {
 	public static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=ACCESS_TOKEN";
 
 	// 企业api end
-	private static final Properties weixinProp = new Properties();
 
+	//发送消息
+	public static final String SEND_MSG = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=ACCESS_TOKEN";
+	
+	private static final Properties weixinProp = new Properties();
+	
 	static {
 		InputStream fis = WeixinApiUtil.class.getClassLoader().getResourceAsStream("weixin.properties");
 		try {
@@ -223,6 +229,20 @@ public class WeixinApiUtil {
 		// getAgentfo("14");
 		// getUserInfo("223234");
 //		getQyJsApiTicket();
-		SignUtil.getCorpJsTicketSign("http://localhost:8088/hx-sales-web/");
+//		SignUtil.getCorpJsTicketSign("http://localhost:8088/hx-sales-web/");
+		JSONObject json = new JSONObject();
+		json.put("touser", "2615");
+		json.put("msgtype", "text");
+		json.put("agentid", "11");
+		json.put("safe", "1");
+		
+		JSONObject content = new JSONObject();
+		content.put("content", "主页型发送通知测试-保密");
+		
+		json.put("text", content);
+		String requestUrl = SEND_MSG.replace("ACCESS_TOKEN", getQyToken());
+		System.out.println("发消息");
+		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, json.toJSONString());
+		System.out.println(resp);
 	}
 }
