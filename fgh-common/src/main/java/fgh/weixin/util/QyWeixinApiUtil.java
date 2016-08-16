@@ -13,6 +13,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import fgh.common.util.FastJsonConvert;
 import fgh.common.util.RedisUtil;
+import fgh.weixin.message.qy.BaseMessage;
+import fgh.weixin.message.qy.RespMsg;
+import fgh.weixin.message.qy.TextMessage;
 import fgh.weixin.pojo.AgentInfo;
 import fgh.weixin.pojo.JsApiTicket;
 import fgh.weixin.pojo.Token;
@@ -232,6 +235,16 @@ public class QyWeixinApiUtil {
 		return HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, menu);
 	}
 	
+	public static RespMsg sendTextMsg2Agent(BaseMessage message){
+		logger.info(Constant.LOG_MAIN_WEIXIN+"发送消息"+message);
+		String requestUrl = SEND_MSG.replace("ACCESS_TOKEN", getQyToken());
+		String json = FastJsonConvert.convertObjectToJSON(message);
+		System.out.println("发消息,"+json);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, json);
+		RespMsg respMsg = FastJsonConvert.convertJSONToObject(resp, RespMsg.class);
+		return respMsg;
+	}
+	
 	public static void main(String[] args) {
 		// Token token = null;
 		// String requestUrl = getQyTokenUrl();
@@ -245,19 +258,52 @@ public class QyWeixinApiUtil {
 		// getUserInfo("223234");
 //		getQyJsApiTicket();
 //		SignUtil.getCorpJsTicketSign("http://localhost:8088/hx-sales-web/");
-		JSONObject json = new JSONObject();
-		json.put("touser", "2615");
-		json.put("msgtype", "text");
-		json.put("agentid", "11");
-		json.put("safe", "1");
+//		JSONObject json = new JSONObject();
+//		json.put("touser", "2615");
+//		json.put("msgtype", "text");
+//		json.put("agentid", "29");
+//		json.put("safe", "0");
+//		
+//		JSONObject content = new JSONObject();
+//		content.put("content", "测试");
+//		
+//		json.put("text", content);
+//		
+//		
+//		String requestUrl = SEND_MSG.replace("ACCESS_TOKEN", getQyToken());
+//		System.out.println("发消息");
+//		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, json.toJSONString());
+//		System.out.println(resp);
 		
-		JSONObject content = new JSONObject();
-		content.put("content", "主页型发送通知测试-保密");
+		TextMessage message = new TextMessage();
+		message.setAgentid(29);
+		message.setMsgtype(WeixinConstant.QY_MSG_TYPE_TEXT);
+		message.setSafe("0");
+		message.setTouser("2615");
+		String price = "3-5万";
+		String pawnageName = "真力时计时自动男表真力时计时自动男表";
+		String storeName = "北京回龙观华联一店";
+		String amount = "46844";
+		String salesMan = "姚魁";
+		String saleTime = "15:07:24";
+		StringBuffer detail = new StringBuffer();
+		detail.append("****有大单了****\r\n");
+		detail.append("价格：");
+		detail.append(price);
+		detail.append("\r\n当物：");
+		detail.append(pawnageName);
+		detail.append("\r\n门店：");
+		detail.append(storeName);
+		detail.append("\r\n金额：");
+		detail.append(amount);
+		detail.append("\r\n业务员：");
+		detail.append(salesMan);
+		detail.append("\r\n销售时间：");
+		detail.append(saleTime);
+		message.setContent(detail.toString());
+		String json = FastJsonConvert.convertObjectToJSON(message);
+		System.out.println(json);
 		
-		json.put("text", content);
-		String requestUrl = SEND_MSG.replace("ACCESS_TOKEN", getQyToken());
-		System.out.println("发消息");
-		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, json.toJSONString());
-		System.out.println(resp);
+		RespMsg resp = sendTextMsg2Agent(message);
 	}
 }
