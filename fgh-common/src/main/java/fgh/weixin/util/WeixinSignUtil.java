@@ -13,9 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
+import com.qq.weixin.mp.aes.AesException;
+import com.qq.weixin.mp.aes.WXBizMsgCrypt;
 
 /**
  * 微信签名工具类
+ * 
  * @author fgh
  * @since 2016年8月12日下午3:15:08
  */
@@ -24,14 +27,18 @@ public class WeixinSignUtil {
 	private static Logger logger = LoggerFactory.getLogger(WeixinSignUtil.class);
 
 	/**
-	 * 初始化回调地址
+	 * 企业微信回调验签
+	 * 
 	 * @param request
 	 * @param token
+	 * @param encodingAesKey
+	 * @param appId
 	 * @return
 	 */
-	public static String initWeixinCallback(HttpServletRequest request,String token) {
+	public static String qyWeixinCheckSingNature(HttpServletRequest request, String token, String encodingAesKey,
+			String corpID) {
 		// 微信加密签名
-		String signature = request.getParameter("signature");
+		String msgSignature = request.getParameter("msg_signature");
 		// 时间戳
 		String timestamp = request.getParameter("timestamp");
 		// 随机数
@@ -39,17 +46,22 @@ public class WeixinSignUtil {
 		// 随机字符串
 		String echostr = request.getParameter("echostr");
 
-		logger.info(Constant.LOG_MAIN_WEIXIN+"微信校验签名,signature[" + signature + "],timestamp[" + timestamp + "],nonce[" + nonce + "],echostr["
-				+ echostr + "]");
-		
-		// 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
-		if (checkSignature(signature, timestamp, nonce,token)) {
-			return echostr;
-		} else {
-			return "error";
+		logger.info(Constant.LOG_MAIN_WEIXIN + "企业微信回调验签,msgSignature[" + msgSignature + "],timestamp[" + timestamp
+				+ "],nonce[" + nonce + "],echostr[" + echostr + "],token["+token+"]");
+
+		;
+		String retEchoStr; // 需要返回的明文
+		try {
+			WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(token, encodingAesKey, corpID);
+			retEchoStr = wxcpt.VerifyURL(msgSignature, timestamp, nonce, echostr);
+			logger.info("企业微信回调验签,verifyurl echostr: " + retEchoStr);
+		} catch (AesException e) {
+			retEchoStr = "error";
+			logger.error("企业微信回调验签失败",e);
 		}
+		return retEchoStr;
 	}
-	
+
 	/**
 	 * 校验签名
 	 * 
@@ -59,11 +71,12 @@ public class WeixinSignUtil {
 	 *            时间戳
 	 * @param nonce
 	 *            随机数
-	 * @param token 应用自定义的token
+	 * @param token
+	 *            应用自定义的token
 	 * @return
 	 */
-	public static boolean checkSignature(String signature, String timestamp, String nonce,String token) {
-		logger.info(Constant.LOG_MAIN_WEIXIN+"checkSignature start...");
+	public static boolean checkSignature(String signature, String timestamp, String nonce, String token) {
+		logger.info(Constant.LOG_MAIN_WEIXIN + "checkSignature start...");
 		// 对token、timestamp和nonce按字典排序
 		String[] paramArr = new String[] { token, timestamp, nonce };
 		Arrays.sort(paramArr);
@@ -78,10 +91,10 @@ public class WeixinSignUtil {
 			byte[] digest = md.digest(content.toString().getBytes());
 			ciphertext = byteToStr(digest);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error(Constant.LOG_MAIN_WEIXIN+"checkSignature error", e);
+			logger.error(Constant.LOG_MAIN_WEIXIN + "checkSignature error", e);
 		}
 		boolean result = ciphertext != null ? ciphertext.equals(signature.toUpperCase()) : false;
-		logger.info(Constant.LOG_MAIN_WEIXIN+"checkSignature end ,result[" + result + "]...");
+		logger.info(Constant.LOG_MAIN_WEIXIN + "checkSignature end ,result[" + result + "]...");
 
 		// 将sha1加密后的字符串与signature进行对比
 		return result;
@@ -125,13 +138,13 @@ public class WeixinSignUtil {
 	 * @return
 	 */
 	public static JSONObject getCorpJsTicketSign(String url) {
-		logger.info(Constant.LOG_MAIN_WEIXIN+"getCorpJsTicketSign,url["+url+"]");
+		logger.info(Constant.LOG_MAIN_WEIXIN + "getCorpJsTicketSign,url[" + url + "]");
 		String nonceStr = createNonceStr();
 		String timestamp = createTimestamp();
 		String signature = "";
 
-		String jsApiTicket = QyWeixinApiUtil.getQyJsApiTicket();//ticket
-		
+		String jsApiTicket = QyWeixinApiUtil.getQyJsApiTicket();// ticket
+
 		// 注意这里参数名必须全部小写，且必须有序
 		StringBuffer signStr = new StringBuffer(64);
 		signStr.append("jsapi_ticket=");
@@ -162,7 +175,7 @@ public class WeixinSignUtil {
 		result.put("timestamp", timestamp);
 		result.put("signature", signature);
 
-		logger.info(Constant.LOG_MAIN_WEIXIN+"getCorpJsTicketSign,"+result+"");
+		logger.info(Constant.LOG_MAIN_WEIXIN + "getCorpJsTicketSign," + result + "");
 		return result;
 	}
 

@@ -131,16 +131,16 @@ public class QyWeixinApiUtil {
 			token = FastJsonConvert.convertJSONToObject(resp, Token.class);
 			if (null != token) {
 				try {
-					logger.info("调用api,获取企业AccessToken[" + token.getAccessToken() + "]");
+					logger.info(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业AccessToken[" + token.getAccessToken() + "]");
 					setRedisCorpToken(token);
 					tokenValue = token.getAccessToken();
 				} catch (JSONException e) {
 					token = null;
-					logger.error("调用api,获取企业token失败, errcode:{} errmsg:{}", e);
+					logger.error(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业token失败, errcode:{} errmsg:{}", e);
 				}
 			}
 		} else {
-			logger.info("从redis缓存获取企业AccessToken[" + tokenValue + "]");
+			logger.info(Constant.LOG_MAIN_WEIXIN+"从redis缓存获取企业AccessToken[" + tokenValue + "]");
 		}
 		return tokenValue;
 
@@ -156,7 +156,7 @@ public class QyWeixinApiUtil {
 		String requestUrl = GET_USER_INFO_URL.replace("ACCESS_TOKEN", getQyToken()).replace("CODE", code);
 		String result = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
 		UserInfo userInfo = FastJsonConvert.convertJSONToObject(result, UserInfo.class);
-		logger.info("微信oauth获取用户信息code[" + code + "],userInfo[" + userInfo + "]");
+		logger.info(Constant.LOG_MAIN_WEIXIN+"微信oauth获取用户信息code[" + code + "],userInfo[" + userInfo + "]");
 		return userInfo;
 	}
 
@@ -168,6 +168,7 @@ public class QyWeixinApiUtil {
 	 *            应用ID
 	 */
 	public static AgentInfo getAgentfo(String agentId) {
+		logger.info(Constant.LOG_MAIN_WEIXIN+"获取应用信息["+agentId+"]");
 		String requestUrl = GET_AGENT_INFO.replace("ACCESS_TOKEN", getQyToken()).replace("AGENTID", agentId);
 		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
 		AgentInfo agentInfo = FastJsonConvert.convertJSONToObject(resp, AgentInfo.class);
@@ -199,28 +200,36 @@ public class QyWeixinApiUtil {
 
 			if (null != jsApiTicket) {
 				try {
-					logger.info("调用api,获取企业jsapi_ticket[" + jsApiTicket.getTicket() + "]");
+					logger.info(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket[" + jsApiTicket.getTicket() + "]");
 					if (null != jsApiTicket && Constant.ERROR_CODE_OK.equals(jsApiTicket.getErrCode())) {
 						RedisUtil.set(Constant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getTicket());
 						RedisUtil.expire(Constant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getExpiresIn() - 200);
 					}else{
-						logger.info("调用api,获取企业jsapi_ticket失败,errorCode["+jsApiTicket.getErrCode()+"],errorMsg["+jsApiTicket.getErrMsg()+"]");
+						logger.info(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket失败,errorCode["+jsApiTicket.getErrCode()+"],errorMsg["+jsApiTicket.getErrMsg()+"]");
 					}
 					ticket = jsApiTicket.getTicket();
 				} catch (JSONException e) {
 					ticket = null;
-					logger.error("调用api,获取企业jsapi_ticket失败, errcode:{} errmsg:{}", e);
+					logger.error(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket失败, errcode:{} errmsg:{}", e);
 				}
 			}
 		} else {
-			logger.info("从redis缓存获取企业jsapi_ticket[" + ticket + "]");
+			logger.info(Constant.LOG_MAIN_WEIXIN+"从redis缓存获取企业jsapi_ticket[" + ticket + "]");
 		}
 		return ticket;
 
 	}
 
-	public static void createMenu(){
-		
+	/**
+	 * 创建菜单
+	 * @param menu 菜单内容 json串
+	 * @param agentId 应用ID
+	 * @return
+	 */
+	public static String createMenu(String menu,String agentId){
+		logger.info(Constant.LOG_MAIN_WEIXIN+"创建菜单,menu:"+menu+",agentid["+agentId+"]");
+		String requestUrl = CREATE_MENU.replace("ACCESS_TOKEN", getQyToken()).replace("AGENTID", agentId);
+		return HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, menu);
 	}
 	
 	public static void main(String[] args) {
