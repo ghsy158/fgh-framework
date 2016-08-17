@@ -3,6 +3,7 @@ package fgh.common.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +168,7 @@ public class RedisUtil {
 		int seconds = hour*60*60;
 		return setExSecond(key, value, seconds);
 	}
+	
 	/**
 	 * 设置超时时间
 	 * 
@@ -182,14 +184,67 @@ public class RedisUtil {
 			jedis = getJedis();
 			jedis.expire(key, seconds);
 		}catch (Exception e) {
-			logger.info(LOG_MAIN+"redis expire,key["+key+"],value["+seconds+"] error",e);
+			logger.error(LOG_MAIN+"redis expire error,key["+key+"],value["+seconds+"]",e);
 			returnResource(jedis);
 		}  finally {
 			returnResource(jedis);
 		}
 		return result;
 	}
-
+	
+	/**
+	 * 设置set集合，并设置超时时间,如果不超时,senonds传-1
+	 * @param key
+	 * @param seconds 超时时间,如果不超时,设置为-1
+	 * @param members 
+	 * @return
+	 */
+	public static boolean addSet(final String key,int seconds, final String... members) {
+		logger.info(LOG_MAIN+"redis addSet,key["+key+"],members["+members+"],seconds["+seconds+"]");
+		Jedis jedis = null;
+		boolean result = false;
+		try {
+			jedis = getJedis();
+			long addCount = jedis.sadd(key, members);
+			long exCount = 0;
+			//如果超时时间>0，设置超时时间，否则不设置
+			if(seconds > 0){
+				exCount = jedis.expire(key, seconds);
+			}
+			if(addCount>0 &&exCount >0 ){
+				result= true;
+			}
+		}catch (Exception e) {
+			logger.error(LOG_MAIN+"redis addSet error,key["+key+"],members["+members+"],seconds["+seconds+"]",e);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+	
+	/**
+	 * 获取set集合
+	 * @param key
+	 * @return
+	 */
+	public static Set<String> getSet(final String key) {
+		logger.info(LOG_MAIN+"redis getSet,key["+key+"]");
+		Jedis jedis = null;
+		Set<String> result = null;
+		try {
+			jedis = getJedis();
+			result= jedis.smembers(key);
+		}catch (Exception e) {
+			logger.error(LOG_MAIN+"redis getSet error,key["+key+"]",e);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+	
+	
 	private static String getRedisHost() {
 		return redisProp.getProperty("redis.host");
 	}
