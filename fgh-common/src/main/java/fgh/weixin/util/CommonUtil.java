@@ -35,12 +35,14 @@ public class CommonUtil {
 			AgentInfo agentInfo = QyWeixinApiUtil.getAgentfo(agentId);
 			List<User> allowUserInfos = agentInfo.getAllowUserInfos();
 			String[] users = new String[allowUserInfos.size()];
+			String userId = null;
 			for (int i = 0; i < allowUserInfos.size(); i++) {
-				users[i] = allowUserInfos.get(i).getUserid();
+				userId = allowUserInfos.get(i).getUserid();
+				users[i] = userId;
+				allowUsers.add(userId);
 			}
 			RedisUtil.addSet(key, 4 * 60 * 60, users);// 缓存4个小时
-			logger.info(Constant.LOG_MAIN_WEIXIN + "调用api,查询授权的用户,agentId[" + agentId + "],allowUserInfos:"
-					+ allowUserInfos);
+			logger.info(Constant.LOG_MAIN_WEIXIN + "调用api,查询授权的用户,agentId[" + agentId + "],allowUsers:" + allowUsers);
 		} else {
 			logger.info(Constant.LOG_MAIN_WEIXIN + "从缓存中获取授权的用户,agentId[" + agentId + "],allowUsers:" + allowUsers);
 		}
@@ -51,7 +53,7 @@ public class CommonUtil {
 	 * 发送消息,获取授权的用户ID，多个用户用"|"分隔
 	 */
 	public static String getUserIds(String key, String agentId) {
-		Set<String> allowUserSet  = getAllowUserIds(key, agentId);
+		Set<String> allowUserSet = getAllowUserIds(key, agentId);
 		StringBuffer allowUsers = new StringBuffer();
 		for (String userId : allowUserSet) {
 			allowUsers.append(userId);
