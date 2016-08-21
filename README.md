@@ -1,2 +1,2 @@
 # fgh-framework
-my framrwork use internet arch technology
+my framework use main internet arch technology
