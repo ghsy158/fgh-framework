@@ -1,17 +1,13 @@
 package fgh.weixin.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 
 import fgh.common.util.FastJsonConvert;
+import fgh.common.util.PropertyUtil;
 import fgh.common.util.RedisUtil;
 import fgh.weixin.message.qy.BaseMessage;
 import fgh.weixin.message.qy.RespMsg;
@@ -31,9 +27,6 @@ public class QyWeixinApiUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(QyWeixinApiUtil.class);
 
-	// 公众号凭证获取（GET）
-	public final static String token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-	// 企业api start
 	/** 获取企业token **/
 	public static final String QY_TOKEN_URL = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=APP_CORPID&corpsecret=APP_SECRECT";
 
@@ -46,24 +39,11 @@ public class QyWeixinApiUtil {
 	/** 获取jsapi_ticket **/
 	public static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=ACCESS_TOKEN";
 
-	// 企业api end
-
 	//发送消息
 	public static final String SEND_MSG = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=ACCESS_TOKEN";
 	
 	//创建菜单
 	public static final String CREATE_MENU="https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN&agentid=AGENTID";
-	
-	private static final Properties weixinProp = new Properties();
-	
-	static {
-		InputStream fis = QyWeixinApiUtil.class.getClassLoader().getResourceAsStream("weixin.properties");
-		try {
-			weixinProp.load(fis);
-		} catch (IOException e) {
-			logger.error("读取微信的配置文件失败", e);
-		}
-	}
 
 	/**
 	 * 获取企业token 请求URL
@@ -71,53 +51,9 @@ public class QyWeixinApiUtil {
 	 * @return
 	 */
 	private static String getQyTokenUrl() {
-		return QY_TOKEN_URL.replace("APP_CORPID", getQyCorpID()).replace("APP_SECRECT", getQySecret());
+		return QY_TOKEN_URL.replace("APP_CORPID", PropertyUtil.getWeixinConfig("qy_CorpID")).replace("APP_SECRECT",  PropertyUtil.getWeixinConfig("qy_Secret"));
 	}
-
-	/**
-	 * QyCorpID
-	 * 
-	 * @return
-	 */
-	public static String getQyCorpID() {
-		return weixinProp.getProperty("qy_CorpID");
-	}
-
-	/**
-	 * QySecret
-	 * 
-	 * @return
-	 */
-	private static String getQySecret() {
-		return weixinProp.getProperty("qy_Secret");
-	}
-
-	/**
-	 * 获取微信配置
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public static String getWeixinConfig(String key) {
-		return weixinProp.getProperty(key);
-	}
-
-	/**
-	 * 获取接口访问凭证
-	 * 
-	 * @param appid
-	 *            凭证
-	 * @param appsecret
-	 *            密钥
-	 * @return
-	 */
-	public static Token getToken(String appid, String appsecret) {
-		String requestUrl = token_url.replace("APPID", appid).replace("APPSECRET", appsecret);
-		// 发起GET请求获取凭证
-		String resp = HttpClientUtil.httpsRequest(requestUrl, "GET", null);
-		return FastJsonConvert.convertJSONToObject(resp, Token.class);
-	}
-
+	
 	/**
 	 * 获取企业token
 	 * 
@@ -304,6 +240,6 @@ public class QyWeixinApiUtil {
 		String json = FastJsonConvert.convertObjectToJSON(message);
 		System.out.println(json);
 		
-		RespMsg resp = sendTextMsg2Agent(message);
+//		RespMsg resp = sendTextMsg2Agent(message);
 	}
 }
