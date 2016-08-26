@@ -1,5 +1,6 @@
 package fgh.weixin.util;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -64,6 +65,16 @@ public class CommonUtil {
 		} else {
 			return "";
 		}
+	}
+	
+	/**
+	 * 格式化金额，添加千位分隔符
+	 * @param amount
+	 * @return
+	 */
+	public static String formatCurrency(Object amount) {
+		DecimalFormat df = new DecimalFormat("#,###");
+		return df.format(amount);
 	}
 
 }
