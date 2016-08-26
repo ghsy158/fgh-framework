@@ -1,30 +1,29 @@
 package fgh.weixin.message.req;
 
-import java.util.List;
 import java.util.Map;
 
 public class TemplateMsg {
 
-	private String touser;
-	private String template_id;
+	private String toUser;
+	private String templateId;
 	private String url;
 
-	private Map<String, List<Template>> data;
+	private Map<String, Template> data;
 
-	public String getTouser() {
-		return touser;
+	public String getToUser() {
+		return toUser;
 	}
 
-	public void setTouser(String touser) {
-		this.touser = touser;
+	public void setToUser(String toUser) {
+		this.toUser = toUser;
 	}
 
-	public String getTemplate_id() {
-		return template_id;
+	public String getTemplateId() {
+		return templateId;
 	}
 
-	public void setTemplate_id(String template_id) {
-		this.template_id = template_id;
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
 	}
 
 	public String getUrl() {
@@ -35,11 +34,11 @@ public class TemplateMsg {
 		this.url = url;
 	}
 
-	public Map<String, List<Template>> getData() {
+	public Map<String, Template> getData() {
 		return data;
 	}
 
-	public void setData(Map<String, List<Template>> data) {
+	public void setData(Map<String, Template> data) {
 		this.data = data;
 	}
 
