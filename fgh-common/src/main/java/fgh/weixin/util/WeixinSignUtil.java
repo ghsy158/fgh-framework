@@ -46,7 +46,7 @@ public class WeixinSignUtil {
 		// 随机字符串
 		String echostr = request.getParameter("echostr");
 
-		logger.info(Constant.LOG_MAIN_WEIXIN + "企业微信回调验签,msgSignature[" + msgSignature + "],timestamp[" + timestamp
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "企业微信回调验签,msgSignature[" + msgSignature + "],timestamp[" + timestamp
 				+ "],nonce[" + nonce + "],echostr[" + echostr + "],token["+token+"]");
 
 		;
@@ -76,7 +76,7 @@ public class WeixinSignUtil {
 	 * @return
 	 */
 	public static boolean checkSignature(String signature, String timestamp, String nonce, String token) {
-		logger.info(Constant.LOG_MAIN_WEIXIN + "checkSignature start...");
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "checkSignature start...");
 		// 对token、timestamp和nonce按字典排序
 		String[] paramArr = new String[] { token, timestamp, nonce };
 		Arrays.sort(paramArr);
@@ -91,10 +91,10 @@ public class WeixinSignUtil {
 			byte[] digest = md.digest(content.toString().getBytes());
 			ciphertext = byteToStr(digest);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error(Constant.LOG_MAIN_WEIXIN + "checkSignature error", e);
+			logger.error(WeixinConstant.LOG_MAIN_WEIXIN + "checkSignature error", e);
 		}
 		boolean result = ciphertext != null ? ciphertext.equals(signature.toUpperCase()) : false;
-		logger.info(Constant.LOG_MAIN_WEIXIN + "checkSignature end ,result[" + result + "]...");
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "checkSignature end ,result[" + result + "]...");
 
 		// 将sha1加密后的字符串与signature进行对比
 		return result;
@@ -131,20 +131,25 @@ public class WeixinSignUtil {
 	}
 
 	/**
-	 * 企业jsApi 签名
-	 * 
+	 * 获取jsapi ticket
 	 * @param url
-	 *            要签名的url
+	 * @param type 类型,mp服务号 corp企业号
 	 * @return
 	 */
-	public static JSONObject getCorpJsTicketSign(String url) {
-		logger.info(Constant.LOG_MAIN_WEIXIN + "getCorpJsTicketSign,url[" + url + "]");
+	public static JSONObject getJsTicketSign(String url,String type) {
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "getJsTicketSign,url[" + url + "],type["+type+"]");
 		String nonceStr = createNonceStr();
 		String timestamp = createTimestamp();
 		String signature = "";
 
-		String jsApiTicket = QyWeixinApiUtil.getQyJsApiTicket();// ticket
-
+		String jsApiTicket = null;// ticket
+		
+		if(WeixinConstant.jsApiType.CORP.equals(type)){
+			jsApiTicket = QyWeixinApiUtil.getQyJsApiTicket();
+		}else if(WeixinConstant.jsApiType.MP.equals(type)){
+			jsApiTicket = MpWeixinApiUtil.getJsApiTicket();
+		}
+		
 		// 注意这里参数名必须全部小写，且必须有序
 		StringBuffer signStr = new StringBuffer(64);
 		signStr.append("jsapi_ticket=");
@@ -163,9 +168,9 @@ public class WeixinSignUtil {
 			crypt.update(signStr.toString().getBytes("UTF-8"));
 			signature = byteToHex(crypt.digest());
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("企业 js ticket 签名失败", e);
+			logger.error("js ticket 签名失败", e);
 		} catch (UnsupportedEncodingException e) {
-			logger.error("企业 js ticket 签名失败", e);
+			logger.error("js ticket 签名失败", e);
 		}
 
 		JSONObject result = new JSONObject();
@@ -175,7 +180,7 @@ public class WeixinSignUtil {
 		result.put("timestamp", timestamp);
 		result.put("signature", signature);
 
-		logger.info(Constant.LOG_MAIN_WEIXIN + "getCorpJsTicketSign," + result + "");
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "getJsTicketSign,url[" + url + "],type["+type+"],result["+result+"]");
 		return result;
 	}
 

@@ -9,13 +9,51 @@ package fgh.weixin.util;
 public class WeixinConstant {
 
 	/**
+	 * 请求方法
+	 * 
+	 * @author fgh
+	 * @since 2016年7月28日上午11:21:41
+	 */
+	public class requestMethod {
+		public static final String GET = "GET";
+		public static final String POST = "POST";
+	}
+
+	/**
+	 * jsticket api
+	 * @author fgh
+	 * @since 2016年8月29日下午6:08:16
+	 */
+	public class jsApiType{
+		/**企业号**/
+		public static final String CORP = "corp";
+		/**服务号**/
+		public static final String MP = "mp";
+	}
+	
+	/** 企业 token redis key **/
+	public static final String REDIS_CORP_TOKEN_KEY = "corpToken";
+
+	/** 服务号token redis key **/
+	public static final String REDIS_MP_TOKEN_KEY = "mpToken";
+
+	/** 企业 jsapi_ticket redis key **/
+	public static final String REDIS_CORP_JSAPI_TICKET_KEY = "corpJsTicket";
+
+	/** 服务号 jsapi_ticket redis key **/
+	public static final String REDIS_MP_JSAPI_TICKET_KEY = "mpJsTicket";
+
+	public static final String REDIS_CORP_TOKEN_EXPIRE_KEY = "corpTokenExpire";
+
+	public static final String LOG_MAIN_WEIXIN = "【wexin】";
+
+	/**
 	 * 成功返回报文编号
 	 */
-	public static final String SUCCESS_CODE="0";
-	
-	public static final String SUCCESS_MSG="ok";
-	
-	
+	public static final String SUCCESS_CODE = "0";
+
+	public static final String SUCCESS_MSG = "ok";
+
 	// BUTTON_TYPE start
 	/**
 	 * 成员点击view类型按钮后，微信客户端将会打开开发者在按钮中填写的网页URL，可与网页授权获取成员基本信息接口结合，获得成员基本信息。
