@@ -43,9 +43,9 @@ public class CommonUtil {
 				allowUsers.add(userId);
 			}
 			RedisUtil.addSet(key, 4 * 60 * 60, users);// 缓存4个小时
-			logger.info(Constant.LOG_MAIN_WEIXIN + "调用api,查询授权的用户,agentId[" + agentId + "],allowUsers:" + allowUsers);
+			logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "调用api,查询授权的用户,agentId[" + agentId + "],allowUsers:" + allowUsers);
 		} else {
-			logger.info(Constant.LOG_MAIN_WEIXIN + "从缓存中获取授权的用户,agentId[" + agentId + "],allowUsers:" + allowUsers);
+			logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "从缓存中获取授权的用户,agentId[" + agentId + "],allowUsers:" + allowUsers);
 		}
 		return allowUsers;
 	}

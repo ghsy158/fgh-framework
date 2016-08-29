@@ -61,25 +61,25 @@ public class QyWeixinApiUtil {
 	 */
 	public static String getQyToken() {
 		// redis处理
-		String tokenValue = RedisUtil.get(Constant.REDIS_CORP_TOKEN_KEY);
+		String tokenValue = RedisUtil.get(WeixinConstant.REDIS_CORP_TOKEN_KEY);
 		if (StringUtils.isBlank(tokenValue)) {
 			Token token = null;
 			String requestUrl = getQyTokenUrl();
 			// 发起GET请求获取凭证
-			String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+			String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
 			token = FastJsonConvert.convertJSONToObject(resp, Token.class);
 			if (null != token) {
 				try {
-					logger.info(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业AccessToken[" + token.getAccessToken() + "]");
+					logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"调用api,获取企业AccessToken[" + token.getAccessToken() + "]");
 					setRedisCorpToken(token);
 					tokenValue = token.getAccessToken();
 				} catch (JSONException e) {
 					token = null;
-					logger.error(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业token失败, errcode:{} errmsg:{}", e);
+					logger.error(WeixinConstant.LOG_MAIN_WEIXIN+"调用api,获取企业token失败, errcode:{} errmsg:{}", e);
 				}
 			}
 		} else {
-			logger.info(Constant.LOG_MAIN_WEIXIN+"从redis缓存获取企业AccessToken[" + tokenValue + "]");
+			logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"从redis缓存获取企业AccessToken[" + tokenValue + "]");
 		}
 		return tokenValue;
 
@@ -93,9 +93,9 @@ public class QyWeixinApiUtil {
 	 */
 	public static UserInfo getUserInfo(String code) {
 		String requestUrl = GET_USER_INFO_URL.replace("ACCESS_TOKEN", getQyToken()).replace("CODE", code);
-		String result = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+		String result = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
 		UserInfo userInfo = FastJsonConvert.convertJSONToObject(result, UserInfo.class);
-		logger.info(Constant.LOG_MAIN_WEIXIN+"微信oauth获取用户信息code[" + code + "],userInfo[" + userInfo + "]");
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"微信oauth获取用户信息code[" + code + "],userInfo[" + userInfo + "]");
 		return userInfo;
 	}
 
@@ -107,9 +107,9 @@ public class QyWeixinApiUtil {
 	 *            应用ID
 	 */
 	public static AgentInfo getAgentfo(String agentId) {
-		logger.info(Constant.LOG_MAIN_WEIXIN+"获取应用信息["+agentId+"]");
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"获取应用信息["+agentId+"]");
 		String requestUrl = GET_AGENT_INFO.replace("ACCESS_TOKEN", getQyToken()).replace("AGENTID", agentId);
-		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
 		AgentInfo agentInfo = FastJsonConvert.convertJSONToObject(resp, AgentInfo.class);
 		return agentInfo;
 	}
@@ -121,7 +121,7 @@ public class QyWeixinApiUtil {
 	 */
 	public static void setRedisCorpToken(Token token) {
 		logger.info("setRedisCorpToken...");
-		RedisUtil.setExSecond(Constant.REDIS_CORP_TOKEN_KEY, token.getAccessToken(), token.getExpiresIn() - 200);
+		RedisUtil.setExSecond(WeixinConstant.REDIS_CORP_TOKEN_KEY, token.getAccessToken(), token.getExpiresIn() - 200);
 	}
 
 	/**
@@ -131,29 +131,29 @@ public class QyWeixinApiUtil {
 	 */
 	public static String getQyJsApiTicket() {
 		// redis获取
-		String ticket = RedisUtil.get(Constant.REDIS_CORP_JSAPI_TICKET_KEY);
+		String ticket = RedisUtil.get(WeixinConstant.REDIS_CORP_JSAPI_TICKET_KEY);
 		if (StringUtils.isBlank(ticket)) {
 			String requestUrl = GET_JSAPI_TICKET.replace("ACCESS_TOKEN", getQyToken());
-			String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.GET, null);
+			String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
 			JsApiTicket jsApiTicket = FastJsonConvert.convertJSONToObject(resp, JsApiTicket.class);
 
 			if (null != jsApiTicket) {
 				try {
-					logger.info(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket[" + jsApiTicket.getTicket() + "]");
-					if (null != jsApiTicket && Constant.ERROR_CODE_OK.equals(jsApiTicket.getErrCode())) {
-						RedisUtil.set(Constant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getTicket());
-						RedisUtil.expire(Constant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getExpiresIn() - 200);
+					logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket[" + jsApiTicket.getTicket() + "]");
+					if (null != jsApiTicket && WeixinConstant.SUCCESS_CODE.equals(jsApiTicket.getErrCode())) {
+						RedisUtil.set(WeixinConstant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getTicket());
+						RedisUtil.expire(WeixinConstant.REDIS_CORP_JSAPI_TICKET_KEY, jsApiTicket.getExpiresIn() - 200);
 					}else{
-						logger.info(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket失败,errorCode["+jsApiTicket.getErrCode()+"],errorMsg["+jsApiTicket.getErrMsg()+"]");
+						logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket失败,errorCode["+jsApiTicket.getErrCode()+"],errorMsg["+jsApiTicket.getErrMsg()+"]");
 					}
 					ticket = jsApiTicket.getTicket();
 				} catch (JSONException e) {
 					ticket = null;
-					logger.error(Constant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket失败, errcode:{} errmsg:{}", e);
+					logger.error(WeixinConstant.LOG_MAIN_WEIXIN+"调用api,获取企业jsapi_ticket失败, errcode:{} errmsg:{}", e);
 				}
 			}
 		} else {
-			logger.info(Constant.LOG_MAIN_WEIXIN+"从redis缓存获取企业jsapi_ticket[" + ticket + "]");
+			logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"从redis缓存获取企业jsapi_ticket[" + ticket + "]");
 		}
 		return ticket;
 
@@ -166,17 +166,17 @@ public class QyWeixinApiUtil {
 	 * @return
 	 */
 	public static String createMenu(String menu,String agentId){
-		logger.info(Constant.LOG_MAIN_WEIXIN+"创建菜单,menu:"+menu+",agentid["+agentId+"]");
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"创建菜单,menu:"+menu+",agentid["+agentId+"]");
 		String requestUrl = CREATE_MENU.replace("ACCESS_TOKEN", getQyToken()).replace("AGENTID", agentId);
-		return HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, menu);
+		return HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.POST, menu);
 	}
 	
 	public static RespMsg sendTextMsg2Agent(BaseMessage message){
-		logger.info(Constant.LOG_MAIN_WEIXIN+"发送消息"+message);
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"发送消息"+message);
 		String requestUrl = SEND_MSG.replace("ACCESS_TOKEN", getQyToken());
 		String json = FastJsonConvert.convertObjectToJSON(message);
 		System.out.println("发消息,"+json);
-		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, json);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.POST, json);
 		RespMsg respMsg = FastJsonConvert.convertJSONToObject(resp, RespMsg.class);
 		return respMsg;
 	}
@@ -186,7 +186,7 @@ public class QyWeixinApiUtil {
 		// String requestUrl = getQyTokenUrl();
 		// // 发起GET请求获取凭证
 		// String resp = HttpClientUtil.httpsRequest(requestUrl,
-		// Constant.requestMethod.GET, null);
+		// WeixinConstant.requestMethod.GET, null);
 		// token = FastJsonConvert.convertJSONToObject(resp, Token.class);
 		// System.out.println(token);
 		// getQyToken();
@@ -208,7 +208,7 @@ public class QyWeixinApiUtil {
 //		
 //		String requestUrl = SEND_MSG.replace("ACCESS_TOKEN", getQyToken());
 //		System.out.println("发消息");
-//		String resp = HttpClientUtil.httpsRequest(requestUrl, Constant.requestMethod.POST, json.toJSONString());
+//		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.POST, json.toJSONString());
 //		System.out.println(resp);
 		
 		TextMessage message = new TextMessage();
