@@ -1,5 +1,6 @@
 package fgh.weixin.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
@@ -68,12 +69,12 @@ public class CommonUtil {
 	}
 	
 	/**
-	 * 格式化金额，添加千位分隔符
+	 * 格式化金额，添加千位分隔符,保留两位小数
 	 * @param amount
 	 * @return
 	 */
-	public static String formatCurrency(Object amount) {
-		DecimalFormat df = new DecimalFormat("#,###");
+	public static String formatCurrency(BigDecimal amount) {
+		DecimalFormat df = new DecimalFormat("#,###.00");
 		return df.format(amount);
 	}
 
