@@ -309,7 +309,7 @@ public class RedisUtil {
 		// pool.close();
 		// Thread.sleep(110000000);
 
-		RedisUtil.set("test6", "test6");
+		RedisUtil.set("test8", "test8");
 
 	}
 }
