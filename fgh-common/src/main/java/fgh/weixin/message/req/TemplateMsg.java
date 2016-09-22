@@ -4,26 +4,26 @@ import java.util.Map;
 
 public class TemplateMsg {
 
-	private String toUser;
-	private String templateId;
+	private String touser;
+	private String template_id;
 	private String url;
 
 	private Map<String, Template> data;
 
-	public String getToUser() {
-		return toUser;
+	public String getTouser() {
+		return touser;
 	}
 
-	public void setToUser(String toUser) {
-		this.toUser = toUser;
+	public void setTouser(String touser) {
+		this.touser = touser;
 	}
 
-	public String getTemplateId() {
-		return templateId;
+	public String getTemplate_id() {
+		return template_id;
 	}
 
-	public void setTemplateId(String templateId) {
-		this.templateId = templateId;
+	public void setTemplate_id(String template_id) {
+		this.template_id = template_id;
 	}
 
 	public String getUrl() {

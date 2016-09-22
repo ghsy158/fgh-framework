@@ -45,6 +45,11 @@ public class QyWeixinApiUtil {
 	//创建菜单
 	public static final String CREATE_MENU="https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN&agentid=AGENTID";
 
+	//通讯录管理 start
+	/**获取成员 URL**/
+	public  static final String USER_GET_BY_ID="https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&userid=USERID";
+	//通讯录管理 end
+	
 	/**
 	 * 获取企业token 请求URL
 	 * 
@@ -181,6 +186,17 @@ public class QyWeixinApiUtil {
 		return respMsg;
 	}
 	
+	/**
+	 * 获取成员
+	 * @param userId 成员UserID。对应管理端的帐号
+	 */
+	public static void getUserById(String userId){
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN+"获取成员,userId["+userId+"]");
+		String requestUrl = USER_GET_BY_ID.replace("ACCESS_TOKEN", getQyToken()).replace("USERID", userId);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET,null);
+		System.out.println(resp);
+	}
+	
 	public static void main(String[] args) {
 		// Token token = null;
 		// String requestUrl = getQyTokenUrl();
@@ -211,34 +227,36 @@ public class QyWeixinApiUtil {
 //		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.POST, json.toJSONString());
 //		System.out.println(resp);
 		
-		TextMessage message = new TextMessage();
-		message.setAgentid(29);
-		message.setMsgtype(WeixinConstant.QY_MSG_TYPE_TEXT);
-		message.setSafe("0");
-		message.setTouser("2615");
-		String price = "3-5万";
-		String pawnageName = "真力时计时自动男表真力时计时自动男表";
-		String storeName = "北京回龙观华联一店";
-		String amount = "46844";
-		String salesMan = "姚魁";
-		String saleTime = "15:07:24";
-		StringBuffer detail = new StringBuffer();
-		detail.append("****有大单了****\r\n");
-		detail.append("价格：");
-		detail.append(price);
-		detail.append("\r\n当物：");
-		detail.append(pawnageName);
-		detail.append("\r\n门店：");
-		detail.append(storeName);
-		detail.append("\r\n金额：");
-		detail.append(amount);
-		detail.append("\r\n业务员：");
-		detail.append(salesMan);
-		detail.append("\r\n销售时间：");
-		detail.append(saleTime);
-		message.setContent(detail.toString());
-		String json = FastJsonConvert.convertObjectToJSON(message);
-		System.out.println(json);
+//		TextMessage message = new TextMessage();
+//		message.setAgentid(29);
+//		message.setMsgtype(WeixinConstant.QY_MSG_TYPE_TEXT);
+//		message.setSafe("0");
+//		message.setTouser("2615");
+//		String price = "3-5万";
+//		String pawnageName = "真力时计时自动男表真力时计时自动男表";
+//		String storeName = "北京回龙观华联一店";
+//		String amount = "46844";
+//		String salesMan = "姚魁";
+//		String saleTime = "15:07:24";
+//		StringBuffer detail = new StringBuffer();
+//		detail.append("****有大单了****\r\n");
+//		detail.append("价格：");
+//		detail.append(price);
+//		detail.append("\r\n当物：");
+//		detail.append(pawnageName);
+//		detail.append("\r\n门店：");
+//		detail.append(storeName);
+//		detail.append("\r\n金额：");
+//		detail.append(amount);
+//		detail.append("\r\n业务员：");
+//		detail.append(salesMan);
+//		detail.append("\r\n销售时间：");
+//		detail.append(saleTime);
+//		message.setContent(detail.toString());
+//		String json = FastJsonConvert.convertObjectToJSON(message);
+//		System.out.println(json);
+		
+		QyWeixinApiUtil.getUserById("2444");
 		
 //		RespMsg resp = sendTextMsg2Agent(message);
 	}
