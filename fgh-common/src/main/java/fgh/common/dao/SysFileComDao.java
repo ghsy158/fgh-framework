@@ -1,10 +1,14 @@
 package fgh.common.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import fgh.common.entity.SysFile;
@@ -106,7 +110,7 @@ public class SysFileComDao extends BaseJdbcDao {
 		return fileList.get(0);
 	}
 
-	/** 
+	/**
 	 * 获取文件列表
 	 * 
 	 * @param keys
@@ -121,5 +125,29 @@ public class SysFileComDao extends BaseJdbcDao {
 		sql.append(" ORDER BY TYPE,NAME ");
 		return super.getJdbcTemplate().query(sql.toString(), SYS_FILE_ROW_MAPPER, args.toArray());
 
+	}
+
+	/**
+	 * 清空文件缓存方法
+	 * 
+	 * @return
+	 */
+	public List<String> clearFileKeys() {
+		SimpleJdbcCall call = new SimpleJdbcCall(this.getJdbcTemplate()).withCatalogName("PKG_SYS")
+				.withProcedureName("CLEAR_FILES").declareParameters(new SqlOutParameter("P_RET_REFCUR", 0));
+		Map<String, Object> m = call.execute();
+		if (m.values().size() > 0) {
+			String temp = m.values().toArray()[0].toString().replace("[", "").replace("]", "");
+			String[] keys = temp.split(",");
+			List<String> ret = new ArrayList<String>();
+			for (String key : keys) {
+				String temp1 = key.replace("{", "").replace("}", "");
+				if (!StringUtils.isBlank(temp1)) {
+					ret.add(temp1.split("\\=")[1]);
+				}
+			}
+			return ret;
+		}
+		return Collections.emptyList();
 	}
 }
