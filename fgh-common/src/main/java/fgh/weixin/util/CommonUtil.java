@@ -74,6 +74,9 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static String formatCurrency(BigDecimal amount) {
+		if(amount.compareTo(BigDecimal.ZERO) <=0){
+			return "0";
+		}
 		DecimalFormat df = new DecimalFormat("#,###.00");
 		return df.format(amount);
 	}

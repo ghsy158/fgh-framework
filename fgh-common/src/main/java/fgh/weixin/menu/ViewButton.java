@@ -1,6 +1,5 @@
 package fgh.weixin.menu;
 
-
 /**
  * view类型的按钮
  * 
@@ -10,6 +9,8 @@ package fgh.weixin.menu;
 public class ViewButton extends Button {
 	private String type;
 	private String url;
+
+	private String key;
 
 	public String getType() {
 		return type;
@@ -26,4 +27,13 @@ public class ViewButton extends Button {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
 }

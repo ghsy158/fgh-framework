@@ -3,9 +3,11 @@ package fgh.common.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,8 +94,9 @@ public class RedisUtil {
 	public static Jedis getJedis() {
 		JedisSentinelPool pool = getJedisPool();
 		if (logger.isInfoEnabled()) {
-			logger.info(LOG_MAIN + "getJedis,currentHostMaster["+pool.getCurrentHostMaster()+"],NumActive[" + pool.getNumActive() + "],NumIdle[" + pool.getNumIdle()
-					+ "],NumWaiters[" + pool.getNumWaiters() + "]");
+			logger.info(LOG_MAIN + "getJedis,currentHostMaster[" + pool.getCurrentHostMaster() + "],NumActive["
+					+ pool.getNumActive() + "],NumIdle[" + pool.getNumIdle() + "],NumWaiters[" + pool.getNumWaiters()
+					+ "]");
 		}
 		return pool.getResource();
 	}
@@ -259,6 +262,101 @@ public class RedisUtil {
 			result = jedis.smembers(key);
 		} catch (Exception e) {
 			logger.error(LOG_MAIN + "redis getSet error,key[" + key + "]", e);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+
+	/**
+	 * 添加hash set
+	 * 
+	 * @param key
+	 * @param field
+	 * @param value
+	 * @return long
+	 */
+	public static long addHashSet(String key, String field, String value) {
+		logger.info(LOG_MAIN + "redis addHashSet,key:" + key + ",field:" + field + ",value:" + value);
+		Jedis jedis = null;
+		long result = 0L;
+		try {
+			jedis = getJedis();
+			result = jedis.hset(key, field, value);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis addHashSet error,key:" + key + ",field:" + field + ",value:" + value);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+
+	/**
+	 * 通过 key field 获取 Hash set
+	 * 
+	 * @param key
+	 * @param field
+	 * @return String
+	 */
+	public static String getHashSetByKey(String key, String field) {
+		logger.info(LOG_MAIN + "redis getHashSetByKey,key:" + key + ",field:" + field);
+		if (StringUtils.isBlank(key) || StringUtils.isBlank(field)) {
+			return null;
+		}
+		Jedis jedis = null;
+		String result = null;
+		try {
+			jedis = getJedis();
+			result = jedis.hget(key, field);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis getHashSetByKey error,key:" + key + ",field:" + field);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+
+	/**
+	 * 获取hash set 全部数据
+	 * 
+	 * @param key
+	 * @return Map<String, String>
+	 */
+	public static Map<String, String> getHashSetAll(String key) {
+		logger.info(LOG_MAIN + "redis getHashSetAll,key:" + key);
+		Jedis jedis = null;
+		Map<String, String> result = null;
+		try {
+			jedis = getJedis();
+			result = jedis.hgetAll(key);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis getHashSetAll error,key:" + key);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+
+	/**
+	 * 通过key 删除hash set
+	 * 
+	 * @param key
+	 * @param field
+	 * @return
+	 */
+	public static long delHashSetByKey(String key, String field) {
+		logger.info(LOG_MAIN + "redis delHashSetByKey,key:" + key + ",field:" + field);
+		Jedis jedis = null;
+		long result = 0L;
+		try {
+			jedis = getJedis();
+			result = jedis.hdel(key, field);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis delHashSetByKey error,key:" + key + ",field:" + field);
 			returnResource(jedis);
 		} finally {
 			returnResource(jedis);
