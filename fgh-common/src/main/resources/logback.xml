@@ -6,7 +6,7 @@
 		<param name="logPeriod" value="30000" />
 	</initParam>
 
-	<contextName>webchat-web</contextName>
+	<contextName>fgh-common</contextName>
 	<!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 -->
 	<property name="logpath" value="logs/" />
 	<property name="fileName" value="fgh-common" />
