@@ -136,4 +136,8 @@ public class MpWeixinApiUtil {
 
 	}
 
+	
+	public static void main(String[] args) {
+		MpWeixinApiUtil.getOauthAccessToken("0211Fbai2HjZAM0lHM8i2Eaaai21Fba9");
+	}
 }
