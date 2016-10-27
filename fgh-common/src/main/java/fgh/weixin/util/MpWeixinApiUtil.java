@@ -13,6 +13,7 @@ import fgh.weixin.message.req.TemplateMsg;
 import fgh.weixin.message.resp.OauthAccessToken;
 import fgh.weixin.message.resp.TemplateRespMsg;
 import fgh.weixin.pojo.JsApiTicket;
+import fgh.weixin.pojo.KfOnlineList;
 import fgh.weixin.pojo.Token;
 
 /**
@@ -36,6 +37,11 @@ public class MpWeixinApiUtil {
 	/** 获取jsapi_ticket **/
 	public static final String GET_JSAPI_TICKET = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
 
+	//客服接口stat
+	public static final String SERVICE_ONLINE_KF_LIST="https://api.weixin.qq.com/cgi-bin/customservice/getonlinekflist?access_token=ACCESS_TOKEN";
+	//客服接口end
+	
+	
 	public static final String APPID = PropertyUtil.getWeixinConfig("mp_APPID");
 
 	public static final String SECRET = PropertyUtil.getWeixinConfig("mp_APPSECRET");
@@ -136,8 +142,21 @@ public class MpWeixinApiUtil {
 
 	}
 
+	/**
+	 * 获取在线客服列表
+	 * @return KfOnlineList
+	 */
+	public static KfOnlineList getOnlineKfList() {
+		logger.info("获取在线客服列表...");
+		String requestUrl = SERVICE_ONLINE_KF_LIST.replace("ACCESS_TOKEN", getToken());
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
+		KfOnlineList respMsg = FastJsonConvert.convertJSONToObject(resp, KfOnlineList.class);
+		return respMsg;
+	}
+
 	
 	public static void main(String[] args) {
-		MpWeixinApiUtil.getOauthAccessToken("0211Fbai2HjZAM0lHM8i2Eaaai21Fba9");
+		MpWeixinApiUtil.getOnlineKfList();
+		
 	}
 }

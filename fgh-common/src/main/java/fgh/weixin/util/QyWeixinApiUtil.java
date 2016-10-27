@@ -12,6 +12,7 @@ import fgh.common.util.PropertyUtil;
 import fgh.common.util.RedisUtil;
 import fgh.weixin.message.qy.BaseMessage;
 import fgh.weixin.message.qy.RespMsg;
+import fgh.weixin.message.qy.TextMessage;
 import fgh.weixin.pojo.AgentInfo;
 import fgh.weixin.pojo.JsApiTicket;
 import fgh.weixin.pojo.TagUserInfo;
@@ -332,6 +333,16 @@ public class QyWeixinApiUtil {
 		// QyWeixinApiUtil.getUserById("2444");
 
 		// RespMsg resp = sendTextMsg2Agent(message);
-		QyWeixinApiUtil.deleteUser("9999");
+		TextMessage message = new TextMessage();
+		message.setAgentid(5);//应用ID 固定5
+		message.setMsgtype(WeixinConstant.QY_MSG_TYPE_TEXT);//文本消息
+		message.setSafe("0");//固定0
+		message.setTouser("2615");//要发送给的用户 多个用户用|分隔
+		message.setContent("111");//发送的内容
+		QyWeixinApiUtil.sendTextMsg2Agent(message);//调用发送方法
+		
+		
 	}
+	
+	
 }
