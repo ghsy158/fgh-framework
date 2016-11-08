@@ -29,6 +29,9 @@ public class DateUtil {
 	private static SimpleDateFormat simpleDateFormatYM = new SimpleDateFormat("yyyy-MM");
 	private static SimpleDateFormat simpleDateFormatYMZH = new SimpleDateFormat("yyyy年MM月");
 	private static SimpleDateFormat simpleDateFormatY = new SimpleDateFormat("yyyy");
+	private static SimpleDateFormat simpleHHFormat = new SimpleDateFormat("HH");
+	private static SimpleDateFormat simpleMmFormat = new SimpleDateFormat("mm");
+	private static SimpleDateFormat simpleSsFormat = new SimpleDateFormat("ss");
 	public static final String DATE_FORMAT_YYYYMMDD = "yyyyMMdd";
 
 	/**
@@ -63,8 +66,11 @@ public class DateUtil {
 
 	/**
 	 * 格式化
-	 * @param d 要格式化的对象
-	 * @param partten 格式化的pattern
+	 * 
+	 * @param d
+	 *            要格式化的对象
+	 * @param partten
+	 *            格式化的pattern
 	 * @return
 	 */
 	public static String format(Object d, String partten) {
@@ -323,6 +329,27 @@ public class DateUtil {
 	 */
 	public static String getNowDateHHMM() {
 		return simpleHHmmTimeFormat.format(new Date());
+	}
+
+	/**
+	 * 得到当前小时HH
+	 */
+	public static String getNowDateHH() {
+		return simpleHHFormat.format(new Date());
+	}
+
+	/**
+	 * 得到当前分钟mm
+	 */
+	public static String getNowDateMm() {
+		return simpleMmFormat.format(new Date());
+	}
+
+	/**
+	 * 得到当前秒ss
+	 */
+	public static String getNowDateSs() {
+		return simpleSsFormat.format(new Date());
 	}
 
 	/**
@@ -627,10 +654,11 @@ public class DateUtil {
 	}
 
 	/**
-	 * 获取昨日日期   格式yyyyMMdd
+	 * 获取昨日日期 格式yyyyMMdd
+	 * 
 	 * @return
 	 */
-	public static String getYesterdayDate(){
+	public static String getYesterdayDate() {
 		return DateUtil.format(DateUtil.getSpecifyDate(-1), DateUtil.DATE_FORMAT_YYYYMMDD);
 	}
 }

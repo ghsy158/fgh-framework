@@ -19,7 +19,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -42,7 +43,7 @@ import fgh.common.util.FastJsonConvert;
  */
 public class BaseJdbcDao {
 
-	private Logger logger = Logger.getLogger(BaseJdbcDao.class);
+	private Logger logger =LoggerFactory.getLogger(BaseJdbcDao.class);
 	
 	/** JSON数据行映射器 **/
 	private static final JsonRowMapper JSON_ROW_MAPPER = new JsonRowMapper();
@@ -205,17 +206,31 @@ public class BaseJdbcDao {
 	
 	
 	/**
-	 * 
+	 * oracle分页sql
 	 * <b>方法名称：拼接分页语句</b><br>
 	 * <b>概要说明：</b><br>
 	 */
-	public String appendPageSql(StringBuffer sql,int start,int limit){
+	public String getOraclePageSql(StringBuffer sql,int start,int limit){
 		sql.insert(0, "SELECT * FROM (SELECT PAGE_VIEW.*,ROWNUM AS ROW_SEQ_NO FROM (");
 		sql.append(") PAGE_VIEW WHERE ROWNUM<=").append(start +limit);
 		sql.append(") WHERE ROW_SEQ_NO > ").append(start);
 		return sql.toString();
 	}
 	
+	/**
+	 * MySQL分页sql
+	 * @param sql
+	 * @param start
+	 * @param limit
+	 * @return
+	 */
+	public String getMysqlPageSql(StringBuffer sql,int start,int limit){
+		sql.append(" limit ");
+		sql.append(start);
+		sql.append(",");
+		sql.append(limit);
+		return sql.toString();
+	}
 	
 	/**
 	 * 
@@ -224,7 +239,7 @@ public class BaseJdbcDao {
 	 */
 	protected String getCountSql(StringBuffer sql){
 		sql.insert(0, "SELECT count(1) FROM (");
-		sql.append(")");
+		sql.append(") COUNT_S");
 		return sql.toString();
 	}
 	
@@ -236,7 +251,7 @@ public class BaseJdbcDao {
 	 */
 	protected int  queryCount(String sql,Object... args){
 		String countSql = getCountSql(new StringBuffer(sql));
-		return this.jdbcTemplate.queryForObject(countSql, Integer.class);
+		return this.jdbcTemplate.queryForObject(countSql, Integer.class,args);
 	}
 
 	
@@ -272,7 +287,17 @@ public class BaseJdbcDao {
 	}
 	
 	private String getPageSql(String sql,int start,int limit){
-		return this.appendPageSql(new StringBuffer(sql), start, limit);
+		String databaseName = getCurrentDatabaseName();
+		if(null != databaseName ){
+			if(Const.DatabaseType.MYSQL.equals(databaseName.toUpperCase())){
+				return this.getMysqlPageSql(new StringBuffer(sql), start, limit);
+				
+			}else if(Const.DatabaseType.SQLSERVER.equals(databaseName.toUpperCase())){
+			}else if(Const.DatabaseType.ORACLE.equals(databaseName.toUpperCase())){
+				return this.getOraclePageSql(new StringBuffer(sql), start, limit);
+			}
+		}
+		return null;
 	}
 	
 	/**
