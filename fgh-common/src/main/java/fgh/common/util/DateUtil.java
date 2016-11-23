@@ -8,8 +8,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import com.alibaba.fastjson.JSONObject;
+
+import fgh.common.constant.Const;
 
 /**
  * 
@@ -661,4 +664,14 @@ public class DateUtil {
 	public static String getYesterdayDate() {
 		return DateUtil.format(DateUtil.getSpecifyDate(-1), DateUtil.DATE_FORMAT_YYYYMMDD);
 	}
+	
+	/**
+	 * 
+	 * <b>方法名称：</b>获取当前应用服务器时间<br>
+	 * <b>概要说明：</b><br>
+	 */
+	public static String  getSysemTime(){
+		return DateFormatUtils.format(Calendar.getInstance().getTime(), Const.FORMAT_DATETIME);
+	}
+	
 }

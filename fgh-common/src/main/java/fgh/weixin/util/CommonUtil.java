@@ -132,4 +132,18 @@ public class CommonUtil {
 		return df.format(amount);
 	}
 
+	/**
+	 * 格式化金额
+	 * 
+	 * @param amount
+	 * @return
+	 */
+	public static String getAmount(Object amount) {
+		DecimalFormat df = new DecimalFormat("#,###");
+		return df.format(amount);
+	}
+
+	public static void main(String[] args) {
+		System.out.println(getAmount("10"));
+	}
 }

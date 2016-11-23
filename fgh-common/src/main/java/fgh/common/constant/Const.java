@@ -39,6 +39,9 @@ public final class Const {
 	/** 时间戳格式 **/
 	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd HH:mm:ss.SSS";
 	
+	/** 时间格式 **/
+	public static final String FORMAT_DATETIME2 = "MM-dd HH:mm";
+	
 	/** JSON成功标记 **/
 	public static final String JSON_SUCCESS = "success";
 	

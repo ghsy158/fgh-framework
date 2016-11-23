@@ -61,8 +61,14 @@ public class HttpClientUtil {
 			// 设置请求方式（GET/POST）
 			conn.setRequestMethod(requestMethod);
 
+            conn.setRequestProperty("Content-Type", "application/octet-stream");   
+            conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接   
+            conn.setRequestProperty("Charset", "UTF-8");
+            
 			// 当outputStr不为null时向输出流写数据
 			if (null != outputStr) {
+				byte[] requestStringBytes = outputStr.getBytes("UTF-8");  
+				conn.setRequestProperty("Content-length", "" + requestStringBytes.length);  
 				OutputStream outputStream = conn.getOutputStream();
 				// 注意编码格式
 				outputStream.write(outputStr.getBytes("UTF-8"));

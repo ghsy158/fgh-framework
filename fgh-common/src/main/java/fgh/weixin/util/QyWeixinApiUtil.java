@@ -12,11 +12,11 @@ import fgh.common.util.PropertyUtil;
 import fgh.common.util.RedisUtil;
 import fgh.weixin.message.qy.BaseMessage;
 import fgh.weixin.message.qy.RespMsg;
-import fgh.weixin.message.qy.TextMessage;
 import fgh.weixin.pojo.AgentInfo;
 import fgh.weixin.pojo.JsApiTicket;
 import fgh.weixin.pojo.TagUserInfo;
 import fgh.weixin.pojo.Token;
+import fgh.weixin.pojo.UserDetail;
 import fgh.weixin.pojo.UserInfo;
 
 /**
@@ -57,7 +57,10 @@ public class QyWeixinApiUtil {
 	public static final String USER_UPDATE_URL = "https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token=ACCESS_TOKEN";
 	/** 删除成员 URL **/
 	public static final String USER_DELETE_URL = "https://qyapi.weixin.qq.com/cgi-bin/user/delete?access_token=ACCESS_TOKEN&userid=USERID";
-
+	
+	/** 获取部门列表 URL **/
+	public static final String DEPT_LIST_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token=ACCESS_TOKEN&id=ID";
+	
 	// 通讯录管理 end
 
 	// 标签管理 start
@@ -213,11 +216,12 @@ public class QyWeixinApiUtil {
 	 * @param userId
 	 *            成员UserID。对应管理端的帐号
 	 */
-	public static void getUserById(String userId) {
+	public static UserDetail getUserById(String userId) {
 		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "获取成员,userId[" + userId + "]");
 		String requestUrl = USER_GET_BY_ID.replace("ACCESS_TOKEN", getQyToken()).replace("USERID", userId);
 		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
-		System.out.println(resp);
+		UserDetail respMsg = FastJsonConvert.convertJSONToObject(resp, UserDetail.class);
+		return respMsg;
 	}
 
 	/**
@@ -269,7 +273,17 @@ public class QyWeixinApiUtil {
 		TagUserInfo tagUserInfo = FastJsonConvert.convertJSONToObject(resp, TagUserInfo.class);
 		return tagUserInfo;
 	}
+	
+	public static TagUserInfo getDeptList(String deptId) {
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "查询部门列表,deptId[" + deptId + "]");
+		String requestUrl = DEPT_LIST_URL.replace("ACCESS_TOKEN", getQyToken()).replace("ID", deptId);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
+//		TagUserInfo tagUserInfo = FastJsonConvert.convertJSONToObject(resp, TagUserInfo.class);
+		System.out.println(resp);
+		return null;
+	}
 
+	
 	public static void main(String[] args) {
 		// Token token = null;
 		// String requestUrl = getQyTokenUrl();
@@ -333,14 +347,17 @@ public class QyWeixinApiUtil {
 		// QyWeixinApiUtil.getUserById("2444");
 
 		// RespMsg resp = sendTextMsg2Agent(message);
-		TextMessage message = new TextMessage();
-		message.setAgentid(5);//应用ID 固定5
-		message.setMsgtype(WeixinConstant.QY_MSG_TYPE_TEXT);//文本消息
-		message.setSafe("0");//固定0
-		message.setTouser("2615");//要发送给的用户 多个用户用|分隔
-		message.setContent("111");//发送的内容
-		QyWeixinApiUtil.sendTextMsg2Agent(message);//调用发送方法
+//		TextMessage message = new TextMessage();
+//		message.setAgentid(5);//应用ID 固定5
+//		message.setMsgtype(WeixinConstant.QY_MSG_TYPE_TEXT);//文本消息
+//		message.setSafe("0");//固定0
+//		message.setTouser("2615");//要发送给的用户 多个用户用|分隔
+//		message.setContent("111");//发送的内容
+//		QyWeixinApiUtil.sendTextMsg2Agent(message);//调用发送方法
 		
+//		8256,8257,8276
+		QyWeixinApiUtil.getUserById("2019");
+//		QyWeixinApiUtil.getDeptList("8276");
 		
 	}
 	
