@@ -442,11 +442,11 @@ public class BaseJdbcDao {
 		
 		for(Iterator<Entry<String,Object>> iterator = whereSet.iterator();iterator.hasNext();){
 			Entry<String,Object> entry = iterator.next();
-			sql.append(entry.getKey()+"=?,");
+			sql.append(entry.getKey()+"=? and ");
 			sqlArgs.add(entry.getValue());
 		}
-		sql.delete(sql.length()-1, sql.length());
-		return this.getJdbcTemplate().update(sql.toString(),sqlArgs.toArray());
+		String updateSql = sql.substring(0, sql.lastIndexOf("and"));
+		return this.getJdbcTemplate().update(updateSql,sqlArgs.toArray());
 	}
 	
 	/**
