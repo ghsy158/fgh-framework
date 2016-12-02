@@ -33,6 +33,8 @@ public class WeixinConstant {
 	
 	/** 企业 token redis key **/
 	public static final String REDIS_CORP_TOKEN_KEY = "corpToken";
+	/** 企业回话和客服消息 token redis key **/
+	public static final String REDIS_CORP_SESSION_TOKEN_KEY = "sessionToken";
 
 	/** 服务号token redis key **/
 	public static final String REDIS_MP_TOKEN_KEY = "mpToken";

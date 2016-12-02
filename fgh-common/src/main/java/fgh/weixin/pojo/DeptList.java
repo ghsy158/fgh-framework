@@ -1,4 +1,4 @@
-package fgh.weixin.util;
+package fgh.weixin.pojo;
 
 import java.util.List;
 

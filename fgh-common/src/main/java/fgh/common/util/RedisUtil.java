@@ -3,6 +3,7 @@ package fgh.common.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -334,6 +335,29 @@ public class RedisUtil {
 			result = jedis.hgetAll(key);
 		} catch (Exception e) {
 			logger.error(LOG_MAIN + "redis getHashSetAll error,key:" + key);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param key
+	 * @param field
+	 * @return
+	 */
+	public static List<String> getHmList(String key,String field) {
+		logger.info(LOG_MAIN + "redis getHmList,key=" + key+",field="+field);
+		Jedis jedis = null;
+		List<String> result = null;
+		try {
+			jedis = getJedis();
+			result = jedis.hmget(key, field);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis getHmList,key=" + key+",field="+field);
 			returnResource(jedis);
 		} finally {
 			returnResource(jedis);
