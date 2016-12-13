@@ -122,4 +122,17 @@ public class WeixinConstant {
 	 */
 	public static final String QY_MSG_TYPE_MPNEWS = "mpnews";
 	// QY_MSG_TYPE end
+	
+	public static final String YES="1";
+	public static final String NO="0";
+	
+	//0获取全部成员，1获取已关注成员列表，，。
+	public static final String  USER_ALL="0";
+	/**1获取已关注成员列表 status可叠加，未填写则默认为4**/
+	public static final String  USER_FOLLOW="1";
+	/**2获取禁用成员列表 status可叠加，未填写则默认为4**/
+	public static final String  USER_DISABLE="2";
+	/**4获取未关注成员列表  status可叠加，未填写则默认为4**/
+	public static final String  USER_NOT_FOLLOW="4";
+	
 }
