@@ -69,6 +69,7 @@ public class QyWeixinApiUtil {
 	public static final String DEPARTMENT_ADD_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token=ACCESS_TOKEN";
 	private static final String DEPARTMENT_UPDATE_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/update?access_token=ACCESS_TOKEN";
 	private static final String DEPARTMENT_DELETE_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/delete?access_token=ACCESS_TOKEN&id=ID";
+	private static final String DEPARTMENT_QUERY_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token=ACCESS_TOKEN&id=ID";
 
 	// 通讯录管理 end
 
@@ -415,6 +416,18 @@ public class QyWeixinApiUtil {
 		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
 		return resp;
 	}
+	
+	/**
+	 * 查询部门
+	 * @param deptId
+	 * @return
+	 */
+	public static String queryDepartment(String deptId) {
+		logger.info(WeixinConstant.LOG_MAIN_WEIXIN + "企业号通讯录,查询部门,deptId[" + deptId + "]");
+		String requestUrl = DEPARTMENT_QUERY_URL.replace("ACCESS_TOKEN", getQyToken()).replace("ID", deptId);
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
+		return resp;
+	}
 
 	public static RespMsg sendKfMsg(KfSendBaseMsg msg) {
 		String requestUrl = KF_SEND_URL.replace("ACCESS_TOKEN", getQySessionToken());
@@ -480,7 +493,20 @@ public class QyWeixinApiUtil {
 //		String json = QyWeixinApiUtil.updateDepartment(sendObj);
 //		String json = QyWeixinApiUtil.addDepartment(sendObj);
 //		System.out.println(json);
-		QyWeixinApiUtil.getUserOfDept("8155",WeixinConstant.YES,WeixinConstant.USER_ALL);
+//		QyWeixinApiUtil.getUserOfDept("8155",WeixinConstant.YES,WeixinConstant.USER_ALL);
+		
+		JSONObject sendObj = new JSONObject();
+//		sendObj.put("id","6666");
+//		sendObj.put("name", "顾问2");
+//		sendObj.put("parentid", "8026");
+//		sendObj.put("order", "1");
+		sendObj.put("id","8364");
+		sendObj.put("name", "成都财务");
+		sendObj.put("parentid", "8174");
+		sendObj.put("order", "8364");
+		QyWeixinApiUtil.addDepartment(sendObj);
+		
+//		QyWeixinApiUtil.queryDepartment("8364");
 		
 	}
 

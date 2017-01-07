@@ -3,7 +3,7 @@ package fgh.weixin.message.resp;
 import java.util.List;
 
 /**
- * 
+ * 获取部门成员 封装类
  * @author fgh
  * @since 2016年12月13日下午5:14:53
  */

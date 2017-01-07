@@ -271,6 +271,28 @@ public class RedisUtil {
 	}
 
 	/**
+	 * 删除set中的成员
+	 * @param key
+	 * @param members
+	 * @return
+	 */
+	public static long remSet(final String key,final String... members) {
+		logger.info(LOG_MAIN + "redis remSet,key[" + key + "],members="+members);
+		Jedis jedis = null;
+		long result = 0;
+		try {
+			jedis = getJedis();
+			result = jedis.srem(key, members);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis remSet error,key[" + key + "],members="+members, e);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+	
+	/**
 	 * 添加hash set
 	 * 
 	 * @param key
@@ -287,6 +309,32 @@ public class RedisUtil {
 			result = jedis.hset(key, field, value);
 		} catch (Exception e) {
 			logger.error(LOG_MAIN + "redis addHashSet error,key:" + key + ",field:" + field + ",value:" + value);
+			returnResource(jedis);
+		} finally {
+			returnResource(jedis);
+		}
+		return result;
+	}
+
+	/**
+	 * 
+		Increment the number stored at field in the hash at key by value. If key does not exist, a new key holding a hash is created. If field does not exist or holds a string, the value is set to 0 before applying the operation. Since the value argument is signed you can use this command to perform both increments and decrements. 
+	
+		The range of values supported by HINCRBY is limited to 64 bit signed integers. 
+	 * @param key
+	 * @param field
+	 * @param value
+	 * @return
+	 */
+	public static long hincrBy(String key, String field, long value) {
+		logger.info(LOG_MAIN + "redis hincrBy,key:" + key + ",field:" + field + ",value:" + value);
+		Jedis jedis = null;
+		long result = 0L;
+		try {
+			jedis = getJedis();
+			result = jedis.hincrBy(key, field, value);
+		} catch (Exception e) {
+			logger.error(LOG_MAIN + "redis hincrBy error,key:" + key + ",field:" + field + ",value:" + value);
 			returnResource(jedis);
 		} finally {
 			returnResource(jedis);
