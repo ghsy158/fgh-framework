@@ -30,16 +30,19 @@ public final class Const {
 	 */
 	public static final String NULL = "null";
 
-	/** 日期格式 **/
+	/** 日期格式 yyyy-MM-dd **/
 	public static final String FORMAT_DATE = "yyyy-MM-dd";
 	
-	/** 日期时间格式 **/
+	/** 日期格式 yyyyMMdd **/
+	public static final String FORMAT_yyyyMMdd = "yyyyMMdd";
+	
+	/** 日期时间格式  yyyy-MM-dd HH:mm:ss**/
 	public static final String FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss";
 	
-	/** 时间戳格式 **/
+	/** 时间戳格式  yyyy-MM-dd HH:mm:ss.SSS**/
 	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd HH:mm:ss.SSS";
 	
-	/** 时间格式 **/
+	/** 时间格式  MM-dd HH:mm**/
 	public static final String FORMAT_DATETIME2 = "MM-dd HH:mm";
 	
 	/** JSON成功标记 **/
