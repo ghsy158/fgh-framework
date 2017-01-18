@@ -156,7 +156,11 @@ public class MpWeixinApiUtil {
 
 	
 	public static void main(String[] args) {
-		MpWeixinApiUtil.getOnlineKfList();
+//		MpWeixinApiUtil.getOnlineKfList();
+		String url = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=";
+		String requestUrl = url.replace("ACCESS_TOKEN", getToken());
+		String resp = HttpClientUtil.httpsRequest(requestUrl, WeixinConstant.requestMethod.GET, null);
+		System.out.println(resp);
 		
 	}
 }
