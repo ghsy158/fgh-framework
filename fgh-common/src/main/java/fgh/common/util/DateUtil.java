@@ -2,10 +2,12 @@ package fgh.common.util;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -502,14 +504,6 @@ public class DateUtil {
 		return null;
 	}
 
-	public static void main(String[] args) throws Exception {
-		// Time t = new Time(System.currentTimeMillis());
-		//
-		// System.out.println(format(t));
-		// int a = timeCampare("","");
-		System.out.println(DateUtil.getCurrentDateByDiff(600));
-	}
-
 	/**
 	 * 格式化日期类型的参数
 	 * 
@@ -664,14 +658,51 @@ public class DateUtil {
 	public static String getYesterdayDate() {
 		return DateUtil.format(DateUtil.getSpecifyDate(-1), DateUtil.DATE_FORMAT_YYYYMMDD);
 	}
-	
+
 	/**
 	 * 
 	 * <b>方法名称：</b>获取当前应用服务器时间<br>
 	 * <b>概要说明：</b><br>
 	 */
-	public static String  getSysemTime(){
+	public static String getSysemTime() {
 		return DateFormatUtils.format(Calendar.getInstance().getTime(), Const.FORMAT_DATETIME);
 	}
-	
+
+	/**
+	 * 获取当前时间到今天23点59分59秒的秒数
+	 * 
+	 * @return
+	 */
+	public static long getSecond2Zero() {
+		long current = System.currentTimeMillis();// 当前时间毫秒数
+		long zero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();// 今天零点零分零秒的毫秒数
+		long twelve = zero + 24 * 60 * 60 * 1000 - 1;// 今天23点59分59秒的毫秒数
+		long yesterday = System.currentTimeMillis() - 24 * 60 * 60 * 1000;// 昨天的这一时间的毫秒数
+
+		return (twelve - current) / 1000;
+	}
+
+	/**
+	 * 取得系统当前时间
+	 */
+	public static String getSysFormatDate(String format) {
+		java.util.Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat(format);
+		String time = dateFormat.format(date);
+		return time;
+	}
+
+	public static void main(String[] args) throws Exception {
+		// Time t = new Time(System.currentTimeMillis());
+		//
+		// System.out.println(format(t));
+		// int a = timeCampare("","");
+		// Date zeroTime = DateUtil.parseDate("2016-12-15 00:00:00");
+		// System.out.println(zeroTime);
+		// System.out.println(DateUtil.getTodayTime());
+		// long time = (zeroTime.getTime() - System.currentTimeMillis()) / 1000;
+		// System.out.println("seconds=" + time);
+		System.out.println(DateUtil.getSecond2Zero());
+
+	}
 }
