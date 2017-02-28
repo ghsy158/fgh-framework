@@ -2,6 +2,7 @@ package fgh.weixin.util;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -139,11 +140,56 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static String getAmount(Object amount) {
-		DecimalFormat df = new DecimalFormat("#,###");
+		DecimalFormat df = new DecimalFormat("#,###.00");
 		return df.format(amount);
 	}
 
+	/**
+	 * 通过千位分隔符格式化金额
+	 * 
+	 * @param amt
+	 *            金额
+	 * @param len
+	 *            小数位数
+	 * @return 格式后的金额
+	 */
+	public static String formatAmtByComma(String amt, int len) {
+		if (null == amt || amt.length() < 1) {
+			return "0";
+		}
+		NumberFormat formater = null;
+		BigDecimal num = new BigDecimal(amt);
+		if (len == 0) {
+			formater = new DecimalFormat("###,###");
+		} else {
+			StringBuffer buff = new StringBuffer();
+			buff.append("###,###.");
+			for (int i = 0; i < len; i++) {
+				buff.append("#");
+			}
+			formater = new DecimalFormat(buff.toString());
+		}
+		return formater.format(num);
+	}
+
+	/**
+	 * 金额去掉“,”
+	 * 
+	 * @param s
+	 *            金额
+	 * @return 去掉“,”后的金额
+	 */
+	public static String delComma(String s) {
+		String formatString = "";
+		if (null != s && s.length() >= 1) {
+			formatString = s.replaceAll(",", "");
+		}
+		return formatString;
+	}
+
 	public static void main(String[] args) {
-		System.out.println(getAmount("10"));
+//		System.out.println(formatAmtByComma("1112229997.562", 2));
+		System.out.println(formatAmtByComma("", 2));
+		// System.out.println(delComma("1,112,229,997.5"));
 	}
 }
