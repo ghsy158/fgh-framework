@@ -16,7 +16,7 @@ public class Page implements Serializable {
 
 	private int numPerPage = 500;
 
-	private int totalRows;
+	private int total;
 
 	private int totalPages;
 
@@ -34,12 +34,12 @@ public class Page implements Serializable {
 		this.numPerPage = numPerPage;
 	}
 
-	public int getTotalRows() {
-		return totalRows;
+	public int getTotal() {
+		return total;
 	}
 
-	public void setTotalRows(int totalRows) {
-		this.totalRows = totalRows;
+	public void setTotal(int total) {
+		this.total = total;
 	}
 
 	public int getTotalPages() {
@@ -51,10 +51,10 @@ public class Page implements Serializable {
 	}
 
 	public void setTotalPages() {
-		if (totalRows % numPerPage == 0) {
-			this.totalPages = totalRows / numPerPage;
+		if (total % numPerPage == 0) {
+			this.totalPages = total / numPerPage;
 		} else {
-			this.totalPages = (totalRows / numPerPage) + 1;
+			this.totalPages = (total / numPerPage) + 1;
 		}
 	}
 

@@ -1,5 +1,6 @@
 package fgh.common.dao;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,9 +9,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -280,7 +286,7 @@ public class BaseJdbcDao {
 		List<JSONObject> list =pageQueryForList(sql, start, limit, args);
 		Page page = new Page();
 		int total = queryCount(sql, args);
-		page.setTotalRows(total);
+		page.setTotal(total);
 		page.setRows(list);
 		page.setNumPerPage(start);
 		return page;
@@ -450,14 +456,12 @@ public class BaseJdbcDao {
 	}
 	
 	/**
-	 * 
-	 * <b>方法名称：</b>单表insert<br>
-	 * <b>概要说明：</b><br>
+	 * 获取Insert sql
+	 * @param tableName 表名
+	 * @param data 字段
+	 * @return
 	 */
-	protected int insert(String tableName,JSONObject data){
-		if(data.size()<=0){
-			return 0;
-		}
+	private Map<String,Object> getInsertSql(String tableName,JSONObject data){
 		StringBuffer sql = new StringBuffer();
 		sql.append(" INSERT INTO ");
 		sql.append(tableName);
@@ -478,10 +482,57 @@ public class BaseJdbcDao {
 		}
 		sql.delete(sql.length()-1, sql.length());
 		sql.append(" ) ");
-		
-		return this.getJdbcTemplate().update(sql.toString(),sqlArgs.toArray());
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("sql", sql.toString());
+		map.put("args", sqlArgs);
+		return map;
 	}
 	
+	/**
+	 * 
+	 * <b>方法名称：</b>单表insert<br>
+	 * <b>概要说明：</b><br>
+	 */
+	@SuppressWarnings("unchecked")
+	protected int insert(String tableName,JSONObject data){
+		if(data.size()<=0){
+			return 0;
+		}
+		Map<String,Object> map = getInsertSql(tableName, data);
+		String sql =String.valueOf(map.get("sql"));
+		List<Object> args = (List<Object>) map.get("args");
+		return this.getJdbcTemplate().update(sql,args.toArray());
+	}
+	
+	/**
+	 * 插入一个对象，并返回这个对象的自增id
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public int insertAndGetAutoIncreaseId(String tableName,final JSONObject data){
+		Map<String,Object> map = getInsertSql(tableName, data);
+		final String sql =String.valueOf(map.get("sql"));
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		int autoIncId = 0;
+		jdbcTemplate.update(new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+				//设置参数的值
+				Set<Entry<String,Object>> set = data.entrySet();
+				int count=1;//parameterIndex
+				for(Iterator<Entry<String,Object>> iterator = set.iterator();iterator.hasNext();){
+					Entry<String,Object> entry = iterator.next();
+					ps.setObject(count, entry.getValue());
+					count++;
+				}
+				return ps;
+			}
+		}, keyHolder);
+		autoIncId = keyHolder.getKey().intValue();
+		return autoIncId;
+	} 
+	  
 	/**
 	 * 
 	 * <b>方法名称：</b>通过表名批量插入,根据list中map的key,自动拼接insert语句，<br>
